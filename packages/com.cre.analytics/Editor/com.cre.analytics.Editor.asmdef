@@ -1,0 +1,10 @@
+{
+  "name": "CRE.Analytics.Editor",
+  "rootNamespace": "CRE.Analytics.Editor",
+  "references": ["CRE.Analytics.Runtime"],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "autoReferenced": false
+}

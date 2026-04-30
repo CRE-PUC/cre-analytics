@@ -1,7 +1,7 @@
 ---
 id: TASK-004
 title: Scaffold Unity UPM package structure
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:
