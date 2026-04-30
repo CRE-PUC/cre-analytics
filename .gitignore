@@ -1,0 +1,39 @@
+# Unity
+unity-project/Library/
+unity-project/Temp/
+unity-project/obj/
+unity-project/Logs/
+unity-project/UserSettings/
+unity-project/MemoryCaptures/
+unity-project/.vsconfig
+*.csproj
+*.sln
+*.suo
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Node
+node_modules/
+.pnpm-store/
+dist/
+.next/
+out/
+.env
+.env.local
+.env.*.local
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# OS
+.DS_Store
+Thumbs.db
