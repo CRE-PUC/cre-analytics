@@ -17,6 +17,11 @@ Read `docs/sync-queue.md`. If it has pending entries:
 ### 2. Orient
 Read `docs/architecture.md` and any relevant `docs/context/*.md` files for the domain you're about to work in. Do not scan the whole repo blindly — use existing docs first, then drill into code only when you need specifics.
 
+Key context files for this project:
+- `docs/context/unity-sdk.md` — UPM package structure, Bake Analytics, manual Unity steps
+- `docs/context/session-data-format.md` — session JSON shape, metaData fields, schema versioning
+- `docs/context/firebase.md` — Firestore path structure, Functions endpoint, Hosting/Auth
+
 ### 3. Act
 Create tasks, update architecture, or create context files as needed.
 
@@ -88,6 +93,14 @@ Create folder-scoped `AGENTS.md` files alongside or instead of context files whe
 ## Architecture Maintenance
 
 `docs/architecture.md` is the source of truth for the system's structure. Keep it accurate. If you make an architectural decision during a session (even informally), update it before ending the session — do not rely on a future sync to capture it.
+
+---
+
+## Unity Manual Steps
+
+When creating tasks that touch `packages/com.cre.analytics/`, always include a **Manual Step Required** notice in the task telling the user to open Unity after Windsurf completes. See `docs/context/unity-sdk.md` for the full table of what triggers a manual step.
+
+Never create a task asking Windsurf to create a Unity project — that must be done by the user in the Unity editor.
 
 ---
 

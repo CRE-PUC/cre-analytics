@@ -1,0 +1,38 @@
+name: UPM Package Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    name: Validate UPM Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate package.json is valid JSON
+        run: |
+          python3 -c "import json; json.load(open('packages/com.cre.analytics/package.json'))"
+          echo "package.json is valid JSON"
+
+      - name: Validate required package fields
+        run: |
+          python3 - <<'EOF'
+          import json, sys
+          with open('packages/com.cre.analytics/package.json') as f:
+              pkg = json.load(f)
+          required = ['name', 'version', 'unity', 'displayName']
+          missing = [k for k in required if k not in pkg]
+          if missing:
+              print(f"Missing required fields: {missing}")
+              sys.exit(1)
+          print(f"Package: {pkg['name']}@{pkg['version']} (Unity {pkg['unity']})")
+          EOF
+
+      - name: Check required folders exist
+        run: |
+          test -d packages/com.cre.analytics/Runtime || (echo "Missing Runtime/" && exit 1)
+          test -d packages/com.cre.analytics/Editor  || (echo "Missing Editor/" && exit 1)
+          echo "Required folders present"

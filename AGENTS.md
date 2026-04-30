@@ -59,10 +59,24 @@ Folder-scoped `AGENTS.md` files contain conventions and behavioral rules specifi
 
 ---
 
+## Project-Wide Rules
+
+### Package management
+Always use **pnpm**. Never use `npm install` or `yarn`. This applies to `functions/` and `backoffice/` alike.
+
+### Unity — Manual Steps Required
+Any task that touches files in `packages/com.cre.analytics/` will require the user to open Unity manually to compile. You must **tell the user** before completing those tasks. Do not attempt to fix Unity compilation errors (CS-prefixed errors) without first asking the user to open Unity — they are almost always "not compiled yet" errors, not code bugs. See `docs/context/unity-sdk.md` for the full list of Unity manual steps.
+
+### CLAUDE.md files
+Do not create `CLAUDE.md` files anywhere in this repo. Those are managed exclusively by Claude.
+
+---
+
 ## What You Do Not Do
 
 - You do not create tasks
 - You do not create or update context files in `docs/context/`
 - You do not create or update any `AGENTS.md` file
+- You do not create any `CLAUDE.md` file
 - You do not update `docs/architecture.md` unless a task explicitly requires it (and then add it to sync-queue)
 - You do not pick up multiple tasks simultaneously unless a task explicitly groups them
