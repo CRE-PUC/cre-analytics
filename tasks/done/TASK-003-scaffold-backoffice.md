@@ -1,7 +1,7 @@
 ---
 id: TASK-003
 title: Scaffold Next.js backoffice
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
