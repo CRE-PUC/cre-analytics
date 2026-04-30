@@ -27,6 +27,7 @@ out/
 .env
 .env.local
 .env.*.local
+functions/lib/
 
 # Firebase
 .firebase/

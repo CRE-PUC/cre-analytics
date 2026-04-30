@@ -1,7 +1,7 @@
 ---
 id: TASK-002
 title: Scaffold Firebase Functions
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:

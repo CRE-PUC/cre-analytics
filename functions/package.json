@@ -1,0 +1,22 @@
+{
+  "name": "cre-analytics-functions",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "lint": "eslint --ext .ts ."
+  },
+  "engines": { "node": "20" },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-functions": "^6",
+    "firebase-admin": "^13"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@typescript-eslint/eslint-plugin": "^8",
+    "@typescript-eslint/parser": "^8",
+    "eslint": "^9",
+    "eslint-plugin-import": "^2"
+  }
+}
