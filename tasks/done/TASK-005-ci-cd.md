@@ -1,7 +1,7 @@
 ---
 id: TASK-005
 title: Scaffold CI/CD GitHub Actions workflows
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
