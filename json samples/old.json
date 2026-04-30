@@ -1,0 +1,68 @@
+{
+  "sessionId": "1234567890",
+  "startedAt": "2025-10-15T12:00:00.000Z",
+  "endedAt": "2025-10-15T12:05:00.000Z",
+  "sessionDurationMs": 300000,
+  "appVersion": "1.0.0",
+  "platform": "quest_3",
+  "scenes": [
+    {
+      "sceneName": "tutorial_scene_a",
+      "startedAt": "2025-10-15T12:00:00.000Z",
+      "endedAt": "2025-10-15T12:02:00.000Z",
+      "durationMs": 120000,
+      "buttonClicks": {
+        "buttonA": 40,
+        "buttonB": 20,
+        "rightGrab": 5,
+        "rightTrigger": 3,
+        "buttonX": 2,
+        "buttonY": 1,
+        "leftGrab": 1,
+        "leftTrigger": 1
+      },
+      "grabs": {
+        "emptyTotal": 50,
+        "objects": [
+          { "objectName": "object1", "count": 10 },
+          { "objectName": "object2", "count": 20 },
+          { "objectName": "object3", "count": 30 }
+        ]
+      },
+      "steps": [
+        {
+          "stepName": "step1",
+          "timesRepeated": 1,
+          "timeSpentMs": 120000,
+          "errors": [
+            { "errorCode": "wrong_object", "count": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "sceneName": "main_experience",
+      "startedAt": "2025-10-15T12:02:00.000Z",
+      "endedAt": "2025-10-15T12:05:00.000Z",
+      "durationMs": 180000,
+      "buttonClicks": {
+        "buttonA": 12,
+        "rightTrigger": 7
+      },
+      "grabs": {
+        "emptyTotal": 8,
+        "objects": [
+          { "objectName": "tool_1", "count": 4 }
+        ]
+      },
+      "steps": [
+        {
+          "stepName": "step2",
+          "timesRepeated": 0,
+          "timeSpentMs": 60000,
+          "errors": []
+        }
+      ]
+    }
+  ]
+}
