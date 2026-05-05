@@ -1,9 +1,12 @@
+'use client';
+
+import { Stack, Heading, Text } from '@cre/web-ui';
+
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-50 font-sans dark:bg-black">
-      <h1 className="text-4xl font-bold text-black dark:text-zinc-50">
-        CRE Analytics
-      </h1>
-    </div>
+    <Stack gap="medium" style={{ padding: 'var(--cre-space-large)' }}>
+      <Heading level={1}>CRE Analytics</Heading>
+      <Text variant="body" tone="muted">Backoffice dashboard — coming soon.</Text>
+    </Stack>
   );
 }

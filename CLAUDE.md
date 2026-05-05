@@ -21,6 +21,9 @@ Key context files for this project:
 - `docs/context/unity-sdk.md` — UPM package structure, Bake Analytics, manual Unity steps
 - `docs/context/session-data-format.md` — session JSON shape, metaData fields, schema versioning
 - `docs/context/firebase.md` — Firestore path structure, Functions endpoint, Hosting/Auth
+- `docs/context/web-ui.md` — @cre/web-ui package structure, token system, component conventions, Storybook sync pipeline
+- `docs/context/token-system.md` — how to add or modify design tokens (read when working in `packages/cre-web-ui/src/theme/`)
+- `docs/context/component-patterns.md` — how to build components in @cre/web-ui (read when creating new components)
 
 ### 3. Act
 Create tasks, update architecture, or create context files as needed.
