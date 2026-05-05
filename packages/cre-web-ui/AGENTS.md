@@ -107,6 +107,30 @@ This story is the visual catalogue of every CSS var in the system. A var that ex
 
 ---
 
+## Undocumented Components
+
+New components that have not yet been documented in the Storybook repo go in:
+
+```
+src/components/undocumented/
+```
+
+They are still exported from `src/index.ts` and must follow all the same patterns (token-first, data-attributes, forwardRef). The `undocumented/` folder is a migration queue, not a lower-quality area.
+
+---
+
+## STORYBOOK_SYNC.md Is Required
+
+After **any** task that adds, changes, or removes a component or token, you must append an entry to `STORYBOOK_SYNC.md`. This is not optional. The file format is defined inside it — follow it exactly.
+
+- New component → full props list, purpose, usage example
+- Modified component → what changed and why
+- Token change → what var was added, renamed, or removed
+
+Completing the task without updating `STORYBOOK_SYNC.md` means the task is not done.
+
+---
+
 ## What Not to Touch
 
 - `src/DsTokens/*.tokens.json` — Figma-owned. Do not hand-edit.

@@ -17,7 +17,8 @@ CRE Analytics is a multi-stack monorepo providing a session-based analytics plat
 | Backend | Firebase Functions (TypeScript) | Single HTTP endpoint per session submission |
 | Database | Firestore | One document per session, under `projects/{projectId}/sessions/{sessionId}` |
 | Backoffice | Next.js (React), Firebase Hosting | Internal dashboard — table view, column selector, CSV export |
-| Package manager | pnpm with workspaces | Used for `functions/` and `backoffice/` — not for Unity |
+| UI Library | `@cre/web-ui` at `packages/cre-web-ui/` | Token-driven React component library; consumed by backoffice via pnpm workspace |
+| Package manager | pnpm with workspaces | Used for `functions/`, `backoffice/`, and `packages/cre-web-ui/` — not for Unity |
 | Unity SDK | UPM package at `packages/com.cre.analytics/` | Distributed via Git URL with `?path=packages/com.cre.analytics` |
 | CI/CD | GitHub Actions | Two separate workflows: Firebase deploy, UPM package validation |
 | Unity version | 6000.0.74f1 | Minimum supported Unity version for UPM consumers |
@@ -29,12 +30,23 @@ CRE Analytics is a multi-stack monorepo providing a session-based analytics plat
 ```
 cre-analytics/
 ├── packages/
-│   └── com.cre.analytics/     # Unity UPM package (SDK)
-│       ├── package.json       # Unity package manifest
-│       ├── Runtime/           # C# runtime — schema, session, sender
-│       ├── Editor/            # Unity editor tools (Bake Analytics window)
-│       ├── Tests/
-│       └── AGENTS.md          # Unity-specific rules for Windsurf
+│   ├── com.cre.analytics/     # Unity UPM package (SDK)
+│   │   ├── package.json       # Unity package manifest
+│   │   ├── Runtime/           # C# runtime — schema, session, sender
+│   │   ├── Editor/            # Unity editor tools (Bake Analytics window)
+│   │   ├── Tests/
+│   │   └── AGENTS.md          # Unity-specific rules for Windsurf
+│   └── cre-web-ui/            # React component library (@cre/web-ui)
+│       ├── src/
+│       │   ├── index.ts       # Public API
+│       │   ├── components/    # Interactive components (documented in Storybook)
+│       │   │   └── undocumented/  # New components pending Storybook migration
+│       │   ├── primitives/    # Layout & typography primitives
+│       │   ├── theme/         # Token system & CSS vars
+│       │   └── DsTokens/      # Figma JSON exports (READ-ONLY)
+│       ├── dist/              # Built output (not in git)
+│       ├── AGENTS.md          # Windsurf rules for this package
+│       └── STORYBOOK_SYNC.md  # Cross-repo change log for Storybook migration
 ├── functions/                 # Firebase Functions backend
 │   └── src/
 ├── backoffice/                # Next.js dashboard
@@ -55,7 +67,10 @@ cre-analytics/
     └── context/
         ├── unity-sdk.md
         ├── session-data-format.md
-        └── firebase.md
+        ├── firebase.md
+        ├── web-ui.md
+        ├── token-system.md
+        └── component-patterns.md
 ```
 
 ---
@@ -96,9 +111,16 @@ Firebase Functions (TypeScript). Exposes a single authenticated HTTPS endpoint: 
 See `docs/context/firebase.md`.
 
 ### `backoffice/`
-Next.js dashboard hosted on Firebase Hosting. Reads sessions from Firestore, renders them as a table with selectable columns (tree-aware for `/`-separated names) and CSV export.
+Next.js dashboard hosted on Firebase Hosting. Reads sessions from Firestore, renders them as a table with selectable columns (tree-aware for `/`-separated names) and CSV export. All UI is built with `@cre/web-ui` — no standalone CSS frameworks.
 
 See `docs/context/firebase.md`.
+
+### `packages/cre-web-ui/`
+Token-driven React component library. 14 interactive components, 12 layout/typography primitives, and a Figma-sourced design token system (CSS custom properties, light/dark theme). Consumed by `backoffice/` via pnpm workspace linking.
+
+Will eventually migrate to the dedicated `web-ui` repo with Storybook documentation. Until then, new components go in `src/components/undocumented/` and all changes are logged in `STORYBOOK_SYNC.md` for handoff.
+
+See `docs/context/web-ui.md`, `docs/context/token-system.md`, `docs/context/component-patterns.md`.
 
 ---
 
@@ -106,6 +128,7 @@ See `docs/context/firebase.md`.
 
 - **Firebase** (single project): Functions, Firestore, Hosting, Authentication
 - **Unity 6000.0.74f1** — minimum version for UPM consumers; the development project in `unity-project/` uses this version
+- **Figma** — source of truth for the design token JSON files (`packages/cre-web-ui/src/DsTokens/`); those files are read-only in this repo
 
 ---
 
