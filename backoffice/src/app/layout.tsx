@@ -2,6 +2,7 @@
 
 import { Poppins, Source_Sans_3 } from "next/font/google";
 import { CreThemeProvider } from "@cre/web-ui";
+import { AuthProvider } from "@/lib/AuthProvider";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -28,7 +29,9 @@ export default function RootLayout({
     >
       <body>
         <CreThemeProvider scope="global" initialMode="light">
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </CreThemeProvider>
       </body>
     </html>

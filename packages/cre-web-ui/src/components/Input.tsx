@@ -20,6 +20,7 @@ const INPUT_CSS = `
   border-color: var(--cre-color-border);
   background: var(--cre-color-surface);
   box-sizing: border-box;
+  position: relative;
 }
 
 [data-cre="inputRoot"][data-disabled="true"] {
@@ -43,16 +44,23 @@ const INPUT_CSS = `
 }
 
 [data-cre="inputRoot"]:focus-within {
-  box-shadow: 0 0 0 var(--cre-border-width-medium) var(--cre-color-focus);
   border-color: var(--cre-color-border-strong);
+}
+
+[data-cre="inputRoot"]:focus-within::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: var(--cre-border-width-medium) solid var(--cre-color-focus);
+  pointer-events: none;
 }
 
 [data-cre="inputRoot"][data-error="true"] {
   border-color: var(--cre-feedback-error-border);
 }
 
-[data-cre="inputRoot"][data-error="true"]:focus-within {
-  box-shadow: 0 0 0 var(--cre-border-width-medium) var(--cre-feedback-error-border);
+[data-cre="inputRoot"][data-error="true"]:focus-within::before {
   border-color: var(--cre-feedback-error-border);
 }
 
