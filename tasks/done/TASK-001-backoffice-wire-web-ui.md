@@ -1,7 +1,7 @@
 ---
 id: TASK-001
 title: Wire @cre/web-ui as a pnpm workspace dependency in backoffice
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
