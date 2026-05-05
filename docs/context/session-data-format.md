@@ -101,10 +101,30 @@ The top-level document at `projects/{projectId}` can store project metadata (dis
 
 ## Validation (Firebase Function)
 
-The `POST /submitSession` function validates:
+The `submitSession` function validates:
 - `metaData.projectId` is present and non-empty
 - `metaData.sessionId` is present
 - `metaData.startedAt` and `endedAt` are valid ISO 8601 timestamps
 - `sessionData.data` is an array
+- `projectKey` matches the project document in Firestore (`permission-denied` if not)
+- If a schema document exists for `projects/{projectId}/schemas/{metaData.schemaVersion}`: all `columnName` values declared in the schema are present in `sessionData.data` (`invalid-argument` with missing column names if not)
 
-It does **not** validate that all schema fields are present — that is the SDK's responsibility before submission.
+If no schema exists for the submitted `schemaVersion`, column validation is skipped (backward compat for the transition period).
+
+---
+
+## Schema Storage
+
+When Unity bakes a schema, the `bakeSchema` function writes a document to `projects/{projectId}/schemas/{schemaVersion}`:
+
+```ts
+{
+  columns: Array<{
+    columnName: string;
+    dataType?: 'string' | 'number' | 'boolean' | null;
+  }>;
+  bakedAt: string;  // ISO 8601
+}
+```
+
+The `dataType` field is optional and reserved for future display hints in the dashboard table (e.g., formatting numbers vs. timestamps). It is not used for validation. Unity may omit it — the function stores `null` if absent.
