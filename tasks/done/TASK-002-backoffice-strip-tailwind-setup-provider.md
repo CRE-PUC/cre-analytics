@@ -1,7 +1,7 @@
 ---
 id: TASK-002
 title: Strip Tailwind from backoffice and wire CreThemeProvider
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:
