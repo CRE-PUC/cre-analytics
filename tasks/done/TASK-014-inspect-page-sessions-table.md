@@ -1,7 +1,7 @@
 ---
 id: TASK-014
 title: Backoffice — project inspect page (sessions table)
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:
