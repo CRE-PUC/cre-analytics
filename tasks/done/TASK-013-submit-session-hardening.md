@@ -1,7 +1,7 @@
 ---
 id: TASK-013
 title: submitSession — projectKey auth and schema validation
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 depends-on: TASK-012

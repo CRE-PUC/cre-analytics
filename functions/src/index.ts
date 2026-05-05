@@ -6,13 +6,44 @@ admin.initializeApp();
 
 export const submitSession = functions.https.onCall(
   async (request: functions.https.CallableRequest<SubmitSessionRequest>) => {
-    const { sessionData } = request.data;
+    const { projectKey, sessionData } = request.data;
 
     if (!sessionData?.metaData?.projectId || !sessionData?.metaData?.sessionId) {
       throw new functions.https.HttpsError('invalid-argument', 'Missing required metaData fields');
     }
 
     const { projectId, sessionId } = sessionData.metaData;
+
+    const projectDoc = await admin.firestore().collection('projects').doc(projectId).get();
+    if (!projectDoc.exists) {
+      throw new functions.https.HttpsError('not-found', 'Project not found');
+    }
+    if (projectDoc.data()?.projectKey !== projectKey) {
+      throw new functions.https.HttpsError('permission-denied', 'Invalid project key');
+    }
+
+    const schemaDoc = await admin
+      .firestore()
+      .collection('projects')
+      .doc(projectId)
+      .collection('schemas')
+      .doc(sessionData.metaData.schemaVersion)
+      .get();
+
+    if (schemaDoc.exists) {
+      const schema = schemaDoc.data() as ProjectSchema;
+      const submittedColumns = new Set(sessionData.data.map((d) => d.columnName));
+      const missingColumns = schema.columns
+        .map((c) => c.columnName)
+        .filter((name) => !submittedColumns.has(name));
+
+      if (missingColumns.length > 0) {
+        throw new functions.https.HttpsError(
+          'invalid-argument',
+          `Session data is missing required columns: ${missingColumns.join(', ')}`
+        );
+      }
+    }
 
     await admin
       .firestore()

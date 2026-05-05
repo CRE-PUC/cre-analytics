@@ -18,6 +18,7 @@ export interface SessionData {
 }
 
 export interface SubmitSessionRequest {
+  projectKey: string;
   sessionData: SessionData;
 }
 
