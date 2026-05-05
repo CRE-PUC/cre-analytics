@@ -1,7 +1,7 @@
 ---
 id: TASK-015
 title: Postman collection for CRE Analytics API
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
