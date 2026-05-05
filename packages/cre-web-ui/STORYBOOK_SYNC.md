@@ -50,4 +50,17 @@ When ready to sync a batch of changes to the Storybook repo:
 
 <!-- Newest entries first -->
 
-*(No entries yet — log starts when the first component or token is added or changed in this repo.)*
+### [2026-05-05] modified-component: Input
+
+- **Type:** modified-component
+- **Status:** undocumented
+- **Location:** src/components/Input.tsx
+- **Summary:** Changed focus ring from box-shadow to a ::before pseudo-element so it renders correctly when the Input is inside a clipping ancestor (e.g. Drawer, Surface with border-radius) while maintaining proper border-radius.
+- **Props / Changes:**
+  - No prop changes. CSS-only fix: `box-shadow` on `:focus-within` replaced with `::before` pseudo-element using absolute positioning and `border-radius: inherit`. Added `position: relative` to `[data-cre="inputRoot"]` to anchor the pseudo-element.
+- **Usage example:**
+  ```tsx
+  <Input value={val} onChange={setVal} />
+  ```
+- **Storybook notes:**
+  The existing focused state story should look identical to before. Add a variant showing the Input focused inside a Surface card to verify the ring is not clipped and follows the border-radius correctly.
