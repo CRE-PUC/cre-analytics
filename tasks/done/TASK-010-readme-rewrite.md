@@ -1,7 +1,7 @@
 ---
 id: TASK-010
 title: Rewrite README for CRE Analytics
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:

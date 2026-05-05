@@ -1,7 +1,7 @@
 ---
 id: TASK-008
 title: Firebase Auth — AuthProvider, auth guard, and login page
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:

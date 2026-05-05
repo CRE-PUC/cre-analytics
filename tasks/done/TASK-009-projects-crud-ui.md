@@ -1,7 +1,7 @@
 ---
 id: TASK-009
 title: Projects page — list, create, edit, delete
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:
