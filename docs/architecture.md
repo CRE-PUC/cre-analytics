@@ -136,9 +136,13 @@ See `docs/context/firebase.md`.
 ### `backoffice/`
 Next.js dashboard hosted on Firebase Hosting. Two main views:
 - **Projects** (`/projects`) — CRUD management of analytics projects.
-- **Inspect** (`/projects/inspect?id={projectId}`) — sessions table for a project, with hierarchical column headers derived from `/`-separated column names, filtered by schema version.
+- **Inspect** (`/projects/inspect?id={projectId}`) — sessions table for a project, with:
+  - Hierarchical column headers derived from `/`-separated column names (`Table` `groupSeparator="/"`)
+  - `FieldSelector` popover to toggle which columns are visible (passes `visibleFields` to `Table`)
+  - `DateRangeFilter` popover to filter sessions by `startedAt` date
+  - Export CSV modal — exports the currently visible columns × currently filtered rows; nested column keys are used verbatim as CSV headers (e.g., `Tutorial Diegetico/Cliques/Botão A`)
 
-All UI is built with `@cre/web-ui` — no standalone CSS frameworks. The `Table` component's `groupSeparator="/"` prop renders nested column groups automatically.
+All UI is built with `@cre/web-ui` — no standalone CSS frameworks. `ControlsRow` sits above the table holding the `DateRangeFilter` (left) and `FieldSelector` + export button (right).
 
 See `docs/context/firebase.md`.
 

@@ -22,13 +22,21 @@ const DATE_RANGE_FILTER_CSS = `
 [data-cre="dateRangeFilterPopover"] {
   position: absolute;
   top: calc(100% + var(--cre-space-nano));
-  right: 0;
   z-index: 20;
   width: 320px;
-  transform-origin: top right;
   transition:
     opacity 140ms ease,
     transform 140ms ease;
+}
+
+[data-cre="dateRangeFilterPopover"][data-align="left"] {
+  left: 0;
+  transform-origin: top left;
+}
+
+[data-cre="dateRangeFilterPopover"][data-align="right"] {
+  right: 0;
+  transform-origin: top right;
 }
 
 [data-cre="dateRangeFilterPopover"][data-state="closed"] {
@@ -120,6 +128,7 @@ export type DateRangeFilterProps = {
   disabled?: boolean;
   placeholder?: string;
   triggerVariant?: CreDateRangeFilterTriggerVariant;
+  popoverAlign?: 'left' | 'right';
   className?: string;
   style?: React.CSSProperties;
 };
@@ -210,6 +219,7 @@ export function DateRangeFilter({
   disabled,
   placeholder = 'Date range',
   triggerVariant = 'field',
+  popoverAlign = 'left',
   className,
   style,
 }: DateRangeFilterProps) {
@@ -320,6 +330,7 @@ export function DateRangeFilter({
       {mounted ? (
         <div
           data-cre="dateRangeFilterPopover"
+          data-align={popoverAlign}
           data-state={open ? 'open' : 'closed'}
           role="dialog"
           aria-modal="false"

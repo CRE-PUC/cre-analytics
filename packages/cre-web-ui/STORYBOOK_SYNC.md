@@ -50,6 +50,36 @@ When ready to sync a batch of changes to the Storybook repo:
 
 <!-- Newest entries first -->
 
+### [2026-05-05] modified-component: Table
+
+- **Type:** modified-component
+- **Status:** undocumented
+- **Location:** src/components/Table.tsx
+- **Summary:** Fixed white line bug in grouped table headers by changing from `border-collapse: collapse` to `border-collapse: separate` with `border-spacing: 0`, removing `position: sticky` from group header cells, adding `z-index: 1` to leaf headers, and adding `border-right` to `td` cells.
+- **Props / Changes:**
+  - No prop changes. CSS-only fix: (1) Changed `[data-cre="table"]` from `border-collapse: collapse` to `border-collapse: separate; border-spacing: 0`; (2) Removed `position: sticky` and `top: 0` from `[data-cre="thGroup"]` selector; (3) Added `z-index: 1` to `[data-cre="th"]` selector; (4) Added `border-right` to `[data-cre="td"]` selector; (5) Removed `border-right: none` from last-child rule. This fixes a browser rendering bug where collapsed borders fail to render correctly at sticky cell junctions, showing white gaps.
+- **Usage example:**
+  ```tsx
+  <Table rows={data} columns={columns} groupSeparator="/" />
+  ```
+- **Storybook notes:**
+  The grouped headers story should no longer show white lines between group label rows and leaf column rows, or between columns. Group headers now scroll away naturally while only the bottom leaf header row stays sticky during vertical scroll.
+
+### [2026-05-05] modified-component: DateRangeFilter
+
+- **Type:** modified-component
+- **Status:** undocumented
+- **Location:** src/components/DateRangeFilter.tsx
+- **Summary:** Added `popoverAlign` prop to control popover horizontal alignment, fixing off-screen and position-shift bugs.
+- **Props / Changes:**
+  - `popoverAlign?: 'left' | 'right'` — controls whether popover aligns to left edge (default) or right edge of trigger. Default `'left'` prevents off-screen clipping when trigger is on left side of page and prevents popover jump when trigger button widens on date selection.
+- **Usage example:**
+  ```tsx
+  <DateRangeFilter value={dateRange} onChange={setDateRange} popoverAlign="left" />
+  ```
+- **Storybook notes:**
+  Add a variant showing `popoverAlign="right"` to demonstrate right-side alignment. The default left alignment should show the popover opening to the right of the trigger without shifting when dates are selected.
+
 ### [2026-05-05] modified-component: Input
 
 - **Type:** modified-component

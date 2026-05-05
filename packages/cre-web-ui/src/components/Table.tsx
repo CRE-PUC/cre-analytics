@@ -18,7 +18,8 @@ const TABLE_CSS = `
 
 [data-cre="table"] {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-family: var(--cre-font-family-body);
   font-size: var(--cre-font-size-tiny);
   color: var(--cre-color-text);
@@ -35,6 +36,7 @@ const TABLE_CSS = `
   background: var(--cre-accent-bg);
   position: sticky;
   top: 0;
+  z-index: 1;
   width: var(--cre-th-width, auto);
 }
 
@@ -45,6 +47,7 @@ const TABLE_CSS = `
 [data-cre="td"] {
   padding: var(--cre-space-nano) var(--cre-space-micro);
   border-bottom: var(--cre-border-width-small) solid var(--cre-color-border);
+  border-right: var(--cre-border-width-small) solid var(--cre-color-border);
   background: var(--cre-color-surface);
 }
 
@@ -79,14 +82,8 @@ const TABLE_CSS = `
   border-bottom: var(--cre-border-width-small) solid var(--cre-accent-border);
   border-right: var(--cre-border-width-small) solid var(--cre-accent-border);
   background: var(--cre-accent-bg);
-  position: sticky;
-  top: 0;
 }
 
-[data-cre="th"]:last-child,
-[data-cre="thGroup"]:last-child {
-  border-right: none;
-}
 
 [data-cre="emptyCell"] {
   padding: var(--cre-space-micro);

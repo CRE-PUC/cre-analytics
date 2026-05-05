@@ -42,6 +42,13 @@ pnpm dev
 This starts:
 - Firebase Emulators UI at http://localhost:4000
 - Next.js backoffice at http://localhost:3000
+- Firebase Functions emulator at http://localhost:5001
+
+Copy `backoffice/.env.local.example` to `backoffice/.env.local` and set `NEXT_PUBLIC_USE_EMULATOR=true` to connect to local emulators.
+
+### API Testing
+
+A Postman collection for the Functions API is at `postman/CRE Analytics.postman_collection.json`. Import it in Postman to test `POST /schemas/bake` and `POST /sessions` against the emulator or production.
 
 ---
 
