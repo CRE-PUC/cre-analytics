@@ -1,7 +1,7 @@
 ---
 id: TASK-007
 title: Firestore project data model + security rules
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
