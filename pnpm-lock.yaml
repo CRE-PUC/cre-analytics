@@ -51,13 +51,22 @@ importers:
 
   functions:
     dependencies:
+      express:
+        specifier: ^4
+        version: 4.22.1
       firebase-admin:
         specifier: ^13
         version: 13.8.0
       firebase-functions:
         specifier: ^6
         version: 6.6.0(firebase-admin@13.8.0)
+      zod:
+        specifier: ^3
+        version: 3.25.76
     devDependencies:
+      '@types/express':
+        specifier: ^4
+        version: 4.17.25
       '@typescript-eslint/eslint-plugin':
         specifier: ^8
         version: 8.59.1(@typescript-eslint/parser@8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
@@ -3256,8 +3265,8 @@ packages:
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
-  zod@4.4.1:
-    resolution: {integrity: sha512-a6ENMBBGZBsnlSebQ/eKCguSBeGKSf4O7BPnqVPmYGtpBYI7VSqoVqw+QcB7kPRjbqPwhYTpFbVj/RqNz/CT0Q==}
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
 
@@ -5108,8 +5117,8 @@ snapshots:
       '@babel/parser': 7.29.3
       eslint: 9.39.4(jiti@2.6.1)
       hermes-parser: 0.25.1
-      zod: 4.4.1
-      zod-validation-error: 4.0.2(zod@4.4.1)
+      zod: 3.25.76
+      zod-validation-error: 4.0.2(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -6919,8 +6928,8 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod-validation-error@4.0.2(zod@4.4.1):
+  zod-validation-error@4.0.2(zod@3.25.76):
     dependencies:
-      zod: 4.4.1
+      zod: 3.25.76
 
-  zod@4.4.1: {}
+  zod@3.25.76: {}

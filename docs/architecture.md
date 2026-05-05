@@ -89,6 +89,9 @@ The `schemaVersion` in `metaData` corresponds to the ScriptableObject version wh
 ### Multi-project support via Firestore path
 Firestore path: `projects/{projectId}/sessions/{sessionId}`. Projects are created in the backoffice — each gets a UUID `projectId` (Firestore document ID) and a UUID `projectKey` (secret for Unity SDK auth). The Unity SDK is configured with both values. A single Firebase deployment hosts all analytics projects. The backoffice scopes views by `projectId`.
 
+### Schema baking
+Before submitting sessions, Unity bakes the schema by calling `bakeSchema` with the list of column names (and optional data types for display). This stores a `ProjectSchema` document at `projects/{projectId}/schemas/{schemaVersion}`. The `submitSession` function validates incoming session data against the stored schema when one exists for the given version. If no schema exists for a version, the session is accepted without column validation (backward compat).
+
 See `docs/context/projects.md`.
 
 ### Column name hierarchy with `/` separator
@@ -108,12 +111,34 @@ The UPM package lives in a subfolder of the monorepo. Users install it in Unity 
 Unity UPM package. See `docs/context/unity-sdk.md` for structure, conventions, and the manual steps required when working in this module.
 
 ### `functions/`
-Firebase Functions (TypeScript). Exposes a single authenticated HTTPS endpoint: `POST /submitSession`. Validates the payload and `projectKey`, writes to `projects/{projectId}/sessions/{sessionId}` in Firestore.
+Firebase Functions (TypeScript). A single Gen 2 `onRequest` export (`api`) serves an Express app deployed to the `southamerica-east1` (São Paulo) region. Request body validation uses Zod. Source structure:
+
+```
+functions/src/
+├── index.ts              # exports: api = onRequest({ region: 'southamerica-east1' }, app)
+├── app.ts                # Express app setup + route registration
+├── middleware/
+│   └── validateProjectKey.ts   # reads projectId+projectKey from body, validates against Firestore
+├── controllers/
+│   ├── schemas.controller.ts   # POST /schemas/bake
+│   └── sessions.controller.ts  # POST /sessions
+├── routes/
+│   └── index.ts
+└── types.ts
+```
+
+Routes:
+- `POST /schemas/bake` — validates projectKey, stores column definitions at `projects/{projectId}/schemas/{schemaVersion}`
+- `POST /sessions` — validates projectKey + schema columns, writes to `projects/{projectId}/sessions/{sessionId}`
 
 See `docs/context/firebase.md`.
 
 ### `backoffice/`
-Next.js dashboard hosted on Firebase Hosting. Reads sessions from Firestore, renders them as a table with selectable columns (tree-aware for `/`-separated names) and CSV export. All UI is built with `@cre/web-ui` — no standalone CSS frameworks.
+Next.js dashboard hosted on Firebase Hosting. Two main views:
+- **Projects** (`/projects`) — CRUD management of analytics projects.
+- **Inspect** (`/projects/inspect?id={projectId}`) — sessions table for a project, with hierarchical column headers derived from `/`-separated column names, filtered by schema version.
+
+All UI is built with `@cre/web-ui` — no standalone CSS frameworks. The `Table` component's `groupSeparator="/"` prop renders nested column groups automatically.
 
 See `docs/context/firebase.md`.
 

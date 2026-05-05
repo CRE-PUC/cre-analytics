@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { collection, getDocs, doc, setDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AuthGuard } from '@/components/AuthGuard';
@@ -64,10 +65,12 @@ function ActionsCell({
   row,
   onEdit,
   onDelete,
+  onInspect,
 }: {
   row: ProjectRow;
   onEdit: (row: ProjectRow) => void;
   onDelete: (row: ProjectRow) => void;
+  onInspect: (row: ProjectRow) => void;
 }) {
   return (
     <Inline gap="nano" align="center">
@@ -77,7 +80,7 @@ function ActionsCell({
       <Button size="small" onClick={() => onDelete(row)}>
         Delete
       </Button>
-      <Button size="small" disabled>
+      <Button size="small" onClick={() => onInspect(row)}>
         Inspect
       </Button>
     </Inline>
@@ -85,6 +88,7 @@ function ActionsCell({
 }
 
 function ProjectsPageContent() {
+  const router = useRouter();
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -180,6 +184,10 @@ function ProjectsPageContent() {
     }
   };
 
+  const handleInspect = (row: ProjectRow) => {
+    router.push(`/projects/inspect?id=${row.id}`);
+  };
+
   const columns: TableColumn<ProjectRow>[] = [
     { key: 'projectName', header: 'Project Name' },
     {
@@ -201,7 +209,7 @@ function ProjectsPageContent() {
       key: 'actions',
       header: '',
       render: (row) => (
-        <ActionsCell row={row} onEdit={openEditDrawer} onDelete={openDeleteModal} />
+        <ActionsCell row={row} onEdit={openEditDrawer} onDelete={openDeleteModal} onInspect={handleInspect} />
       ),
     },
   ];
