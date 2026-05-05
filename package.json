@@ -1,0 +1,10 @@
+{
+  "name": "cre-analytics",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"firebase emulators:start\" \"pnpm --filter backoffice dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9"
+  }
+}

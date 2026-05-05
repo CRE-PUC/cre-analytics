@@ -9,3 +9,4 @@ Claude reads this file at the start of every session. If there are pending entri
 ## Pending Updates
 
 <!-- Format: - `path/to/file.md` — what changed and why (from TASK-XXX) -->
+- `docs/context/firebase.md` — updated local development section with emulator ports and NEXT_PUBLIC_USE_EMULATOR flag (from TASK-006)

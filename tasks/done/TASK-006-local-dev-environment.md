@@ -1,7 +1,7 @@
 ---
 id: TASK-006
 title: Local dev environment — emulators + unified dev script
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
