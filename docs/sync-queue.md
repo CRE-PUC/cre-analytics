@@ -9,3 +9,6 @@ Claude reads this file at the start of every session. If there are pending entri
 ## Pending Updates
 
 <!-- Format: - `path/to/file.md` — what changed and why (from TASK-XXX) -->
+
+- `docs/context/firebase.md` — added bakeSchema function documentation (from TASK-012)
+- `docs/context/session-data-format.md` — updated schema storage section with bakeSchema details (from TASK-012)

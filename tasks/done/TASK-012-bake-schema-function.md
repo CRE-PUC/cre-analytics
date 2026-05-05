@@ -1,7 +1,7 @@
 ---
 id: TASK-012
 title: Firebase Function — bakeSchema endpoint
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:
