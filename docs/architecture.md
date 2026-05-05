@@ -87,7 +87,9 @@ Each Unity project defines its analytics schema as a `SessionSchema` ScriptableO
 The `schemaVersion` in `metaData` corresponds to the ScriptableObject version when it was baked. Old session documents remain readable even after schema changes. The dashboard can filter by schema version if needed.
 
 ### Multi-project support via Firestore path
-Firestore path: `projects/{projectId}/sessions/{sessionId}`. Each Unity project configures a `projectId` string in the SDK. A single Firebase deployment hosts all analytics projects. The backoffice scopes views by `projectId`.
+Firestore path: `projects/{projectId}/sessions/{sessionId}`. Projects are created in the backoffice — each gets a UUID `projectId` (Firestore document ID) and a UUID `projectKey` (secret for Unity SDK auth). The Unity SDK is configured with both values. A single Firebase deployment hosts all analytics projects. The backoffice scopes views by `projectId`.
+
+See `docs/context/projects.md`.
 
 ### Column name hierarchy with `/` separator
 Column names use `/` as a hierarchy separator (e.g., `Tutorial Diegetico/Cliques/Botão A`). The dashboard treats these as a tree for column selection and display — not flat strings.
@@ -106,7 +108,7 @@ The UPM package lives in a subfolder of the monorepo. Users install it in Unity 
 Unity UPM package. See `docs/context/unity-sdk.md` for structure, conventions, and the manual steps required when working in this module.
 
 ### `functions/`
-Firebase Functions (TypeScript). Exposes a single authenticated HTTPS endpoint: `POST /submitSession`. Validates the payload, writes to `projects/{projectId}/sessions/{sessionId}` in Firestore.
+Firebase Functions (TypeScript). Exposes a single authenticated HTTPS endpoint: `POST /submitSession`. Validates the payload and `projectKey`, writes to `projects/{projectId}/sessions/{sessionId}` in Firestore.
 
 See `docs/context/firebase.md`.
 
