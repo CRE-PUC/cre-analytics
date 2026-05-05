@@ -47,3 +47,45 @@ export interface BakeSchemaRequest {
   schemaVersion: string;
   columns: SchemaColumn[];
 }
+
+import { z } from 'zod';
+import { Response } from 'express';
+
+export const SchemaColumnZod = z.object({
+  columnName: z.string().min(1),
+  dataType: z.enum(['string', 'number', 'boolean']).nullable().optional(),
+});
+
+export const BakeSchemaBodyZod = z.object({
+  projectId: z.string().min(1),
+  projectKey: z.string().min(1),
+  schemaVersion: z.string().min(1),
+  columns: z.array(SchemaColumnZod).min(1),
+});
+
+export const SubmitSessionBodyZod = z.object({
+  projectKey: z.string().min(1),
+  sessionData: z.object({
+    metaData: z.object({
+      projectId: z.string().min(1),
+      schemaVersion: z.string().min(1),
+      sessionId: z.string().min(1),
+      platform: z.string().min(1),
+      startedAt: z.string().datetime({ offset: true }),
+      endedAt: z.string().datetime({ offset: true }),
+    }),
+    data: z.array(z.object({
+      columnName: z.string().min(1),
+      value: z.union([z.string(), z.number(), z.boolean(), z.null()]),
+    })),
+  }),
+});
+
+export function validate<T>(schema: z.ZodSchema<T>, body: unknown, res: Response): T | null {
+  const result = schema.safeParse(body);
+  if (!result.success) {
+    res.status(400).json({ error: 'Validation error', details: result.error.issues });
+    return null;
+  }
+  return result.data;
+}

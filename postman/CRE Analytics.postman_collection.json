@@ -1,13 +1,13 @@
 {
   "info": {
     "name": "CRE Analytics",
-    "description": "Postman collection for CRE Analytics Firebase Functions API\n\n## Setup\n\nThis collection uses variables to switch between local emulator and production environments.\n\n### Local Emulator\nSet these variables in the collection:\n- `baseUrl`: `http://127.0.0.1:5001/demo-cre-analytics/us-central1`\n- `projectId`: (paste from backoffice)\n- `projectKey`: (paste from backoffice)\n\n### Production\nSet these variables in the collection:\n- `baseUrl`: `https://us-central1-YOUR_PROJECT.cloudfunctions.net`\n- `projectId`: (paste from backoffice)\n- `projectKey`: (paste from backoffice)\n\n### Firebase Functions Format\nFirebase HTTPS callable functions expect:\n- Request body: `{ \"data\": { ...your payload... } }`\n- Header: `Content-Type: application/json`\n- Response: `{ \"result\": { ...your response... } }`",
+    "description": "Postman collection for CRE Analytics Firebase Functions API\n\n## Setup\n\nThis collection uses variables to switch between local emulator and production environments.\n\n### Local Emulator\nSet these variables in the collection:\n- `baseUrl`: `http://127.0.0.1:5001/demo-cre-analytics/southamerica-east1/api`\n- `projectId`: (paste from backoffice)\n- `projectKey`: (paste from backoffice)\n\n### Production\nSet these variables in the collection:\n- `baseUrl`: `https://southamerica-east1-YOUR_PROJECT.cloudfunctions.net/api`\n- `projectId`: (paste from backoffice)\n- `projectKey`: (paste from backoffice)\n\n### REST API Format\nStandard REST endpoints with JSON bodies:\n- Request body: plain JSON (no wrapper)\n- Header: `Content-Type: application/json`\n- Response: `{ \"success\": true }` or error JSON",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://127.0.0.1:5001/demo-cre-analytics/us-central1",
+      "value": "http://127.0.0.1:5001/demo-cre-analytics/southamerica-east1/api",
       "type": "string"
     },
     {
@@ -37,12 +37,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"data\": {\n    \"projectId\": \"{{projectId}}\",\n    \"projectKey\": \"{{projectKey}}\",\n    \"schemaVersion\": \"1.0.0\",\n    \"columns\": [\n      { \"columnName\": \"Tutorial Diegetico/Começou em\" },\n      { \"columnName\": \"Tutorial Diegetico/Cliques/Botão A\" },\n      { \"columnName\": \"Experiência Principal/Começou em\" },\n      { \"columnName\": \"Experiência Principal/Cliques/Botão A\" }\n    ]\n  }\n}"
+              "raw": "{\n  \"projectId\": \"{{projectId}}\",\n  \"projectKey\": \"{{projectKey}}\",\n  \"schemaVersion\": \"1.0.0\",\n  \"columns\": [\n    { \"columnName\": \"Tutorial Diegetico/Começou em\" },\n    { \"columnName\": \"Tutorial Diegetico/Cliques/Botão A\" },\n    { \"columnName\": \"Experiência Principal/Começou em\" },\n    { \"columnName\": \"Experiência Principal/Cliques/Botão A\" }\n  ]\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/bakeSchema",
+              "raw": "{{baseUrl}}/schemas/bake",
               "host": ["{{baseUrl}}"],
-              "path": ["bakeSchema"]
+              "path": ["schemas", "bake"]
             },
             "description": "Bakes a schema version for a project. Call this from Unity Editor before submitting sessions with a new schema version."
           },
@@ -65,12 +65,12 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"data\": {\n    \"projectKey\": \"{{projectKey}}\",\n    \"sessionData\": {\n      \"metaData\": {\n        \"projectId\": \"{{projectId}}\",\n        \"schemaVersion\": \"1.0.0\",\n        \"sessionId\": \"test-session-001\",\n        \"platform\": \"quest_3\",\n        \"startedAt\": \"2026-05-05T10:00:00.000Z\",\n        \"endedAt\": \"2026-05-05T10:05:00.000Z\"\n      },\n      \"data\": [\n        { \"columnName\": \"Tutorial Diegetico/Começou em\", \"value\": \"2026-05-05T10:00:00Z\" },\n        { \"columnName\": \"Tutorial Diegetico/Cliques/Botão A\", \"value\": 40 },\n        { \"columnName\": \"Experiência Principal/Começou em\", \"value\": \"2026-05-05T10:05:00Z\" },\n        { \"columnName\": \"Experiência Principal/Cliques/Botão A\", \"value\": 30 }\n      ]\n    }\n  }\n}"
+              "raw": "{\n  \"projectKey\": \"{{projectKey}}\",\n  \"sessionData\": {\n    \"metaData\": {\n      \"projectId\": \"{{projectId}}\",\n      \"schemaVersion\": \"1.0.0\",\n      \"sessionId\": \"test-session-001\",\n      \"platform\": \"quest_3\",\n      \"startedAt\": \"2026-05-05T10:00:00.000Z\",\n      \"endedAt\": \"2026-05-05T10:05:00.000Z\"\n    },\n    \"data\": [\n      { \"columnName\": \"Tutorial Diegetico/Começou em\", \"value\": \"2026-05-05T10:00:00Z\" },\n      { \"columnName\": \"Tutorial Diegetico/Cliques/Botão A\", \"value\": 40 },\n      { \"columnName\": \"Experiência Principal/Começou em\", \"value\": \"2026-05-05T10:05:00Z\" },\n      { \"columnName\": \"Experiência Principal/Cliques/Botão A\", \"value\": 30 }\n    ]\n  }\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/submitSession",
+              "raw": "{{baseUrl}}/sessions",
               "host": ["{{baseUrl}}"],
-              "path": ["submitSession"]
+              "path": ["sessions"]
             },
             "description": "Submits a completed session to Firestore. Call this from Unity at runtime when a session ends."
           },

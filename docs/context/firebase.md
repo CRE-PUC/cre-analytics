@@ -49,28 +49,30 @@ Each session document contains the full `sessionData` object as submitted by Uni
 
 ## Firebase Functions
 
-Two HTTPS callable functions. TypeScript source in `functions/src/`.
+Single Gen 2 `onRequest` export (`api`) serving an Express app. Region: `southamerica-east1` (São Paulo). Request validation uses Zod. TypeScript source in `functions/src/`.
 
-### `submitSession`
-- **Input:** `{ projectKey: string, sessionData: { metaData: {...}, data: [...] } }`
-- **Auth:** Validates `projectKey` against `projects/{projectId}.projectKey` in Firestore
-- **Behavior:**
-  1. Validate required `metaData` fields (see `docs/context/session-data-format.md`)
-  2. Validate `projectKey` against the project document (throws `permission-denied` on mismatch)
-  3. Fetch `projects/{projectId}/schemas/{metaData.schemaVersion}` — if found, verify all schema `columnName` values are present in `sessionData.data` (throws `invalid-argument` listing missing columns if not)
-  4. Write to `projects/{projectId}/sessions/{sessionId}` in Firestore
-  5. Return `{ success: true }` or appropriate `HttpsError`
+### Auth pattern (both routes)
+Both routes expect `projectId` and `projectKey` in the request body. A shared `validateProjectKey` middleware reads these, fetches the project document from Firestore, compares keys, and attaches `req.project` for downstream use. Returns HTTP 404 if project not found, 403 if key mismatch.
 
-### `bakeSchema`
-- **Input:** `{ projectId: string, projectKey: string, schemaVersion: string, columns: SchemaColumn[] }`
-- **Auth:** Validates `projectKey` against `projects/{projectId}.projectKey` in Firestore
-- **Behavior:**
-  1. Validate required fields (`projectId`, `projectKey`, `schemaVersion`, non-empty `columns`)
-  2. Validate `projectKey` against the project document
-  3. Write to `projects/{projectId}/schemas/{schemaVersion}` with `{ columns, bakedAt }`
-  4. Return `{ success: true }` or appropriate `HttpsError`
+### `POST /schemas/bake`
+- **Body:** `{ projectId, projectKey, schemaVersion, columns: [{ columnName, dataType? }] }`
+- **Behavior:** Validates body via Zod → auth middleware → writes `projects/{projectId}/schemas/{schemaVersion}` with `{ columns, bakedAt }`
+- **Response:** `{ success: true }` or standard error JSON
 
-Unity calls `bakeSchema` from the Editor ("Bake Analytics" window) before the first session is submitted for a new schema version. Unity calls `submitSession` at runtime when a session ends.
+### `POST /sessions`
+- **Body:** `{ projectKey, sessionData: { metaData: { projectId, schemaVersion, sessionId, platform, startedAt, endedAt }, data: [{ columnName, value }] } }`
+- **Behavior:** Validates body via Zod → auth middleware → if schema doc exists for the version, verifies all schema columns are present → writes `projects/{projectId}/sessions/{sessionId}`
+- **Response:** `{ success: true }` or standard error JSON
+
+Unity calls `POST /schemas/bake` from the Editor ("Bake Analytics" window). Unity calls `POST /sessions` at runtime when a session ends.
+
+### Emulator URL format
+```
+http://localhost:5001/{firebase-project-id}/southamerica-east1/api/{route}
+```
+Examples:
+- `POST http://localhost:5001/demo-cre-analytics/southamerica-east1/api/schemas/bake`
+- `POST http://localhost:5001/demo-cre-analytics/southamerica-east1/api/sessions`
 
 ---
 

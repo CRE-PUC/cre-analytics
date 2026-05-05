@@ -101,13 +101,10 @@ The top-level document at `projects/{projectId}` can store project metadata (dis
 
 ## Validation (Firebase Function)
 
-The `submitSession` function validates:
-- `metaData.projectId` is present and non-empty
-- `metaData.sessionId` is present
-- `metaData.startedAt` and `endedAt` are valid ISO 8601 timestamps
-- `sessionData.data` is an array
-- `projectKey` matches the project document in Firestore (`permission-denied` if not)
-- If a schema document exists for `projects/{projectId}/schemas/{metaData.schemaVersion}`: all `columnName` values declared in the schema are present in `sessionData.data` (`invalid-argument` with missing column names if not)
+The `POST /sessions` endpoint validates:
+- Full body structure via Zod (returns HTTP 400 with Zod issue details on failure)
+- `projectKey` matches `projects/{projectId}.projectKey` in Firestore (HTTP 403 on mismatch, 404 if project not found)
+- If a schema document exists for `projects/{projectId}/schemas/{metaData.schemaVersion}`: all `columnName` values declared in the schema are present in `sessionData.data` (HTTP 422 with list of missing column names if not)
 
 If no schema exists for the submitted `schemaVersion`, column validation is skipped (backward compat for the transition period).
 

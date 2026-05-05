@@ -111,9 +111,25 @@ The UPM package lives in a subfolder of the monorepo. Users install it in Unity 
 Unity UPM package. See `docs/context/unity-sdk.md` for structure, conventions, and the manual steps required when working in this module.
 
 ### `functions/`
-Firebase Functions (TypeScript). Two HTTPS callable endpoints:
-- `submitSession` — validates `projectKey`, optionally validates session data against baked schema, writes to `projects/{projectId}/sessions/{sessionId}`.
-- `bakeSchema` — validates `projectKey`, stores column definitions at `projects/{projectId}/schemas/{schemaVersion}`.
+Firebase Functions (TypeScript). A single Gen 2 `onRequest` export (`api`) serves an Express app deployed to the `southamerica-east1` (São Paulo) region. Request body validation uses Zod. Source structure:
+
+```
+functions/src/
+├── index.ts              # exports: api = onRequest({ region: 'southamerica-east1' }, app)
+├── app.ts                # Express app setup + route registration
+├── middleware/
+│   └── validateProjectKey.ts   # reads projectId+projectKey from body, validates against Firestore
+├── controllers/
+│   ├── schemas.controller.ts   # POST /schemas/bake
+│   └── sessions.controller.ts  # POST /sessions
+├── routes/
+│   └── index.ts
+└── types.ts
+```
+
+Routes:
+- `POST /schemas/bake` — validates projectKey, stores column definitions at `projects/{projectId}/schemas/{schemaVersion}`
+- `POST /sessions` — validates projectKey + schema columns, writes to `projects/{projectId}/sessions/{sessionId}`
 
 See `docs/context/firebase.md`.
 
