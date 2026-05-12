@@ -79,6 +79,26 @@ There is no enforced depth limit, but keep nesting to 3–4 levels max for reada
 
 ---
 
+## System Fields (`Session/` Namespace)
+
+Every session's `data` array contains a fixed set of SDK-managed fields under the `Session/` namespace. These are pre-populated by the SDK at session start and finalized at session end. They are **never** defined in the project's `SessionSchema` ScriptableObject and cannot be overwritten via `CREAnalytics.Set()`.
+
+| Column Name | Type | Set by | Value |
+|---|---|---|---|
+| `Session/StartedAt` | Timestamp | `StartSession()` | `DateTime.UtcNow.ToString("o")` |
+| `Session/EndedAt` | Timestamp | `EndSession()` | `DateTime.UtcNow.ToString("o")` |
+| `Session/Duration` | Float | `EndSession()` | Elapsed seconds as a float |
+| `Session/Platform` | String | `StartSession()` | `Application.platform.ToString()` |
+| `Session/DeviceModel` | String | `StartSession()` | `SystemInfo.deviceModel` |
+
+The Bake Analytics tool appends these five columns to every schema document uploaded to Firestore, so the dashboard always has them as queryable columns without per-project configuration.
+
+### Reserved namespace
+
+The `Session/` prefix (case-insensitive) is reserved. The bake tool shows a validation error and blocks the bake if any user-defined field's `columnName` starts with `Session/`. `CREAnalytics.Set()` also silently discards writes to `Session/` keys with a warning.
+
+---
+
 ## Schema Versioning
 
 `schemaVersion` in `metaData` is set by the "Bake Analytics" editor tool in Unity. When a developer changes the schema (adds/removes/renames fields) and bakes it, the version bumps.
