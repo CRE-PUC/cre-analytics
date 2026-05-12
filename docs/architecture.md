@@ -103,6 +103,15 @@ Internal-only for now using Firebase Authentication. Auth is not coupled to a si
 ### UPM distribution via `?path=`
 The UPM package lives in a subfolder of the monorepo. Users install it in Unity Package Manager with the Git URL format: `https://github.com/{org}/cre-analytics.git?path=packages/com.cre.analytics`. No separate package repo needed.
 
+### SDK bootstrap via RuntimeInitializeOnLoadMethod
+The Unity SDK bootstraps without requiring a scene-placed GameObject or init scene. `AnalyticsManager` uses `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]` to auto-instantiate before any scene loads, making `CREAnalytics.Set()` safe to call from any `Awake()` or `Start()` method in any scene.
+
+### Schema-driven code generation
+The "Bake Analytics" editor tool generates a typed C# accessor class (`Assets/CREAnalytics/Generated/Analytics.cs`) from the project's `SessionSchema`. This creates compile-time safety for field names — typos and schema drift become build errors rather than silent runtime warnings. The generated file lives in the consumer project's `Assets/` and is committed to their version control.
+
+### Session/ system fields in data array
+Five SDK-managed fields (`Session/StartedAt`, `Session/EndedAt`, `Session/Duration`, `Session/Platform`, `Session/DeviceModel`) are automatically included in every session's `data` array. They are pre-populated at session start, finalized at end, and baked into every schema document so the dashboard shows them as queryable columns. The `Session/` namespace is reserved — user schema fields may not use it.
+
 ---
 
 ## Modules & Domains

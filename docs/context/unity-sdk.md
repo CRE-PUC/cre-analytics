@@ -15,7 +15,7 @@ Users install the package in Unity Package Manager using:
 https://github.com/{org}/cre-analytics.git?path=packages/com.cre.analytics
 ```
 
-The `?path=` suffix points UPM to the package subfolder within the monorepo. No separate package repo is needed.
+The `?path=` suffix points UPM to the package subfolder within the monorepo. No separate package repo needed.
 
 Minimum Unity version declared in `package.json`: `"unity": "6000.0"`.
 
@@ -25,15 +25,21 @@ Minimum Unity version declared in `package.json`: `"unity": "6000.0"`.
 
 ```
 packages/com.cre.analytics/
-├── package.json                              # Unity package manifest
+├── package.json
 ├── Runtime/
 │   ├── com.cre.analytics.Runtime.asmdef
-│   ├── AnalyticsSchema.cs                    # ScriptableObject — defines session fields
-│   ├── AnalyticsSession.cs                   # Runtime session data builder
-│   └── SessionSender.cs                      # HTTP submission to Firebase Function
+│   ├── AnalyticsSchema.cs          # ScriptableObject — defines session fields
+│   ├── AnalyticsConfig.cs          # ScriptableObject — baseUrl, projectId (committed to git)
+│   ├── AnalyticsSecrets.cs         # ScriptableObject — projectKey (gitignored)
+│   ├── AnalyticsSession.cs         # Session state, pre-population, payload builder
+│   ├── AnalyticsManager.cs         # Internal MonoBehaviour — auto-bootstrap singleton
+│   ├── CREAnalytics.cs             # Public static API — StartSession, Set, EndSession
+│   └── SessionSender.cs            # HTTP submission coroutine
 ├── Editor/
-│   ├── com.cre.analytics.Editor.asmdef       # references Runtime asmdef
-│   └── BakeAnalyticsWindow.cs                # "Bake Analytics" editor tool
+│   ├── com.cre.analytics.Editor.asmdef
+│   ├── BakeAnalyticsWindow.cs      # Schema editor UI + Bake action
+│   ├── AnalyticsCodeGenerator.cs   # Generates Assets/CREAnalytics/Generated/Analytics.cs
+│   └── AnalyticsSettingsProvider.cs # Project Settings > CRE Analytics panel
 ├── Tests/
 │   ├── Runtime/
 │   │   └── com.cre.analytics.Tests.asmdef
@@ -42,25 +48,103 @@ packages/com.cre.analytics/
 └── AGENTS.md
 ```
 
+The generated file `Assets/CREAnalytics/Generated/Analytics.cs` is written into the **consumer project's** Assets folder, not inside the package. Developers should commit it to their version control.
+
+---
+
+## Runtime Architecture
+
+### Bootstrap
+
+`AnalyticsManager` is an `internal MonoBehaviour` that auto-instantiates before any scene loads using `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]`. It creates a `[CRE Analytics]` GameObject and marks it `DontDestroyOnLoad` — no init scene or scene-placed prefab needed.
+
+On bootstrap, the manager loads three assets from `Resources/`:
+- `CREAnalyticsConfig` (`AnalyticsConfig`) — required; disables SDK if missing
+- `CREAnalyticsSecrets` (`AnalyticsSecrets`) — optional; warns if missing (submission will fail)
+- `CREAnalyticsSchema` (`AnalyticsSchema`) — optional; warns if missing (Set calls discarded)
+
+### Public API
+
+`CREAnalytics` is a `public static class` that delegates all calls to `AnalyticsManager.Instance`. It is the only public entry point — developers never interact with `AnalyticsManager` directly.
+
+```csharp
+CREAnalytics.StartSession();
+CREAnalytics.Set("Tutorial/Steps", 3);
+CREAnalytics.EndSession();
+```
+
+### Generated typed accessors
+
+After baking a schema, the Bake Analytics tool generates `Assets/CREAnalytics/Generated/Analytics.cs` — a static class with one nested class per schema group and one typed setter per field:
+
+```csharp
+Analytics.Tutorial.SetSteps(3);
+Analytics.MainExperience.SetDuration(45.2f);
+```
+
+This is the preferred calling convention — avoids raw column name strings and turns schema drift into compile errors.
+
+### Session lifecycle
+
+- `StartSession()` — generates `sessionId`, records `startedAt`, pre-populates all schema fields (user + `Session/` system fields) to zero values in memory
+- `Set(columnName, value)` — schema-gated: logs a warning and discards if `columnName` is not in the schema
+- `EndSession()` — finalizes `Session/EndedAt` and `Session/Duration`, builds the payload, sends via `SessionSender`, clears session state
+
+---
+
+## Configuration
+
+Configuration is split into two ScriptableObject assets in `Resources/`:
+
+| Asset | Load path | Contents | Source control |
+|---|---|---|---|
+| `AnalyticsConfig` | `Resources/CREAnalyticsConfig` | `baseUrl`, `projectId` | Committed |
+| `AnalyticsSecrets` | `Resources/CREAnalyticsSecrets` | `projectKey` | **Gitignored** |
+
+Configure both via `Edit > Project Settings > CRE Analytics`. The panel creates the assets if they don't exist and shows a persistent warning to add `CREAnalyticsSecrets.asset` to `.gitignore`.
+
 ---
 
 ## Schema & Bake Analytics
 
 ### SessionSchema ScriptableObject
-Defined in `Runtime/AnalyticsSchema.cs`. Each Unity project creates one instance of this asset. It contains:
-- `schemaVersion` — string, bumped by the Bake tool
-- `fields` — list of `AnalyticsField` entries, each with:
-  - `columnName` — string key used in the `data` array (supports `/` hierarchy separator)
-  - `type` — enum: `Int`, `Float`, `String`, `Bool`, `Timestamp`
-  - `description` — optional human-readable label
 
-### Bake Analytics Editor Tool
-`Editor/BakeAnalyticsWindow.cs` — Unity Editor Window accessible via menu. When "baked":
-1. Validates the schema (no duplicate column names, no empty names)
-2. Bumps `schemaVersion`
-3. Marks the asset dirty so Unity saves it
+Defined in `Runtime/AnalyticsSchema.cs`. Each Unity project creates one instance. Fields:
+- `schemaVersion` — string, bumped by the Bake tool on each bake
+- `fields` — list of `AnalyticsField`, each with `columnName` (supports `/` hierarchy), `type` (enum), `description` (optional)
 
-The SDK serializes all fields from the schema into the `data` array on every session submission — **every field is always present**, even if the value is empty/default. This keeps all sessions of the same schema version structurally identical.
+Developers place their schema asset at `Assets/Resources/CREAnalyticsSchema.asset` so the runtime can load it.
+
+### Bake Analytics Editor Window
+
+`Editor/BakeAnalyticsWindow.cs` — accessible via `CRE Analytics > Bake Analytics`. The window has two responsibilities:
+
+**Schema editor UI:**
+- Fields rendered as a recursive tree matching the full column path hierarchy (e.g., `Tutorial/Cliques/Botao A` shows as Tutorial → Cliques → Botao A, each level a nested foldout)
+- Each group node has: editable name (rename propagates to all child field paths), ↑/↓ reorder within siblings, ⧉ duplicate group, "+ Add Field" and "+ Add Sub-Group" context buttons
+- Inline validation: reserved names (`Session/` prefix), duplicates, empty names
+- Rename = move: renaming a group header changes the prefix of all fields under it, so renaming `Tutorial/Cliques` to `Tutorial/Actions` effectively moves that sub-tree
+
+**Bake action (clicking "Bake Analytics"):**
+1. Validates schema — aborts with a dialog on any error
+2. Increments `schemaVersion` (semver patch bump)
+3. Generates `Assets/CREAnalytics/Generated/Analytics.cs` via `AnalyticsCodeGenerator`
+4. POSTs schema (user fields + Session/ system fields) to `{baseUrl}/schemas/bake`
+5. Saves schema asset and refreshes AssetDatabase
+
+### Session/ system fields
+
+The Bake tool always appends these five columns to every schema POST. They are SDK-managed and never appear in the schema editor:
+
+| Column Name | Type |
+|---|---|
+| `Session/StartedAt` | string |
+| `Session/EndedAt` | string |
+| `Session/Duration` | number |
+| `Session/Platform` | string |
+| `Session/DeviceModel` | string |
+
+The `Session/` namespace is reserved. The bake window shows a validation error and blocks baking if any user field starts with `Session/`.
 
 ---
 
@@ -85,9 +169,11 @@ These actions **cannot be performed by Windsurf** and require the user to act:
 |-----------|----------------|
 | First setup | Create the Unity project at `unity-project/` using Unity 6000.0.74f1 |
 | After Unity project created | Add the local package reference to `unity-project/Packages/manifest.json` |
-| After any `.cs`, `.asmdef`, or `package.json` change | Open Unity and let it compile — compilation is not automatic |
+| After any `.cs`, `.asmdef`, or `package.json` change | Open Unity and let it compile |
 | After adding a new `.asmdef` | Open Unity — it needs to import the assembly definition |
 | When adding new Unity packages as dependencies | Add them via Unity Package Manager in the editor |
+| After config setup | Add `Assets/Resources/CREAnalyticsSecrets.asset` to `.gitignore` |
+| After schema creation | Place schema asset at `Assets/Resources/CREAnalyticsSchema.asset` for runtime loading |
 
 Windsurf must **flag all of these to the user** before ending a task that triggers them.
 

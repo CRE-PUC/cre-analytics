@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1616f2fb05cbda459a0ae8a75fc7163, type: 3}
+  m_Name: CREAnalyticsSchema
+  m_EditorClassIdentifier: 
+  schemaVersion: 0.1.4
+  fields:
+  - columnName: "Tutorial Diegetico/Come\xE7ou em"
+    type: 4
+    description: 
+  - columnName: "Tutorial Diegetico/Cliques/Bot\xE3o A"
+    type: 0
+    description: 
+  - columnName: "Tutorial Diegetico/Cliques/Bot\xE3o B"
+    type: 0
+    description: 
+  - columnName: "Tutorial N/Come\xE7ou em"
+    type: 0
+    description: 
+  - columnName: "Tutorial N/Cliques/Bot\xE3o A"
+    type: 0
+    description: 
+  - columnName: "Tutorial N/Cliques/Bot\xE3o B"
+    type: 0
+    description: 
+  - columnName: Tutorial Diegetico/Terminou em
+    type: 4
+    description: 

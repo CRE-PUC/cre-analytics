@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace CRE.Analytics
 {
-    [CreateAssetMenu(fileName = "AnalyticsSchema", menuName = "CRE Analytics/Schema")]
+    [CreateAssetMenu(fileName = "CREAnalyticsSchema", menuName = "CRE Analytics/Schema")]
     public class AnalyticsSchema : ScriptableObject
     {
         public string schemaVersion = "0.1.0";
