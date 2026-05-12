@@ -1,7 +1,7 @@
 ---
 id: TASK-025
 title: HTTP session submission — complete SessionSender
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
