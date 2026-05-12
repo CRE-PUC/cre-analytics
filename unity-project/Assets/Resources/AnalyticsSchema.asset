@@ -12,5 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1616f2fb05cbda459a0ae8a75fc7163, type: 3}
   m_Name: AnalyticsSchema
   m_EditorClassIdentifier: 
-  schemaVersion: 0.1.0
-  fields: []
+  schemaVersion: 0.1.2
+  fields:
+  - columnName: "Tutorial Diegetico/Come\xE7ou em"
+    type: 0
+    description: 
+  - columnName: "Tutorial Diegetico/Cliques/Bot\xE3o A"
+    type: 0
+    description: 
+  - columnName: "Tutorial Diegetico/Cliques/Bot\xE3o B"
+    type: 0
+    description: 
+  - columnName: "Tutorial N/Come\xE7ou em"
+    type: 0
+    description: 
+  - columnName: "Tutorial N/Cliques/Bot\xE3o A"
+    type: 0
+    description: 
+  - columnName: "Tutorial N/Cliques/Bot\xE3o B"
+    type: 0
+    description: 
