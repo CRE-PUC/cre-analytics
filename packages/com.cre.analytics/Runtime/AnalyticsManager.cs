@@ -90,6 +90,13 @@ namespace CRE.Analytics
                 return;
             }
 
+            if (!_currentSession.IsActive)
+            {
+                Debug.LogWarning("[CRE Analytics] EndSession called but session failed to initialize — ignoring.");
+                _currentSession = null;
+                return;
+            }
+
             _currentSession.Complete();
             SessionPayload payload = _currentSession.BuildPayload();
             GetComponent<SessionSender>().Send(payload, Config.baseUrl);

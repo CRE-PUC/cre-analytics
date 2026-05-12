@@ -27,6 +27,7 @@ public class TestingScript : MonoBehaviour
         Analytics.TutorialDiegetico.SetComecouEm(System.DateTime.UtcNow.ToString("o"));
         Analytics.TutorialDiegetico.Cliques.SetBotaoA(Random.Range(0, 10).ToString());
         Analytics.TutorialDiegetico.Cliques.SetBotaoB(Random.Range(0, 10).ToString());
+        Analytics.TutorialDiegetico.SetTerminouEm(System.DateTime.UtcNow.ToString("o"));
 
         Analytics.TutorialN.SetComecouEm(System.DateTime.UtcNow.ToString("o"));
         Analytics.TutorialN.Cliques.SetBotaoA(Random.Range(0, 10).ToString());
