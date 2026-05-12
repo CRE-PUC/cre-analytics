@@ -90,7 +90,7 @@ namespace CRE.Analytics
                 return;
             }
 
-            _currentSession.Finalize();
+            _currentSession.Complete();
             SessionPayload payload = _currentSession.BuildPayload();
             GetComponent<SessionSender>().Send(payload, Config.baseUrl);
             _currentSession = null;

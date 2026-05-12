@@ -85,7 +85,7 @@ namespace CRE.Analytics
             _values[columnName] = value;
         }
 
-        public void Finalize()
+        public void Complete()
         {
             _values["Session/EndedAt"] = DateTime.UtcNow.ToString("o");
             _values["Session/Duration"] = (float)(DateTime.UtcNow - _startedAt).TotalSeconds;
