@@ -188,3 +188,11 @@ If Windsurf sees Unity compilation errors (CS-prefixed errors, missing namespace
 ## `.meta` Files
 
 Unity generates `.meta` files for every asset and script. These must be committed to git. Windsurf should not delete or modify `.meta` files unless explicitly asked.
+
+---
+
+## Architect Notes
+
+When creating tasks that touch `packages/com.cre.analytics/`, always include a **Manual Step Required** notice in the task body telling the user to open Unity after Windsurf completes. Reference the "Manual Steps" table above for specifics.
+
+Never create a task asking Windsurf to create a Unity project — that must be done by the user in the Unity editor.

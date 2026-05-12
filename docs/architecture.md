@@ -178,3 +178,19 @@ See `docs/context/web-ui.md`, `docs/context/token-system.md`, `docs/context/comp
 - All Node.js package management uses **pnpm**, never npm or yarn
 - Schema versioning must be preserved — old session documents must remain readable after schema changes
 - The `data` array in a session document must always contain **all fields defined in the schema**, even if values are empty — this is what makes the data model coherent across sessions
+
+---
+
+## Context File Index
+
+Quick reference for the architect — which file to load for which domain:
+
+| File | When to load |
+|------|-------------|
+| `docs/context/unity-sdk.md` | Any task touching `packages/com.cre.analytics/` or `unity-project/` |
+| `docs/context/session-data-format.md` | Session JSON shape, metaData fields, schema versioning |
+| `docs/context/firebase.md` | Firestore path structure, Functions endpoint, Hosting/Auth |
+| `docs/context/web-ui.md` | `@cre/web-ui` package structure, token system, component conventions |
+| `docs/context/token-system.md` | Adding or modifying design tokens (`packages/cre-web-ui/src/theme/`) |
+| `docs/context/component-patterns.md` | Building new components in `@cre/web-ui` |
+| `docs/context/projects.md` | Project/schema Firestore data model |
