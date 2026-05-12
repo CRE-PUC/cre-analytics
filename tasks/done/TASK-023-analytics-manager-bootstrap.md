@@ -1,7 +1,7 @@
 ---
 id: TASK-023
 title: AnalyticsManager bootstrap + CREAnalytics static API
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:
