@@ -1,7 +1,7 @@
 ---
 id: TASK-021
 title: Redesign Bake Analytics window — grouped schema editor UI
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:

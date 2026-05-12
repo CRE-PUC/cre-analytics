@@ -120,9 +120,10 @@ Developers place their schema asset at `Assets/Resources/CREAnalyticsSchema.asse
 `Editor/BakeAnalyticsWindow.cs` — accessible via `CRE Analytics > Bake Analytics`. The window has two responsibilities:
 
 **Schema editor UI:**
-- Fields displayed grouped by first `/` segment of their `columnName`
-- Each group is a foldout with add/remove field controls
+- Fields rendered as a recursive tree matching the full column path hierarchy (e.g., `Tutorial/Cliques/Botao A` shows as Tutorial → Cliques → Botao A, each level a nested foldout)
+- Each group node has: editable name (rename propagates to all child field paths), ↑/↓ reorder within siblings, ⧉ duplicate group, "+ Add Field" and "+ Add Sub-Group" context buttons
 - Inline validation: reserved names (`Session/` prefix), duplicates, empty names
+- Rename = move: renaming a group header changes the prefix of all fields under it, so renaming `Tutorial/Cliques` to `Tutorial/Actions` effectively moves that sub-tree
 
 **Bake action (clicking "Bake Analytics"):**
 1. Validates schema — aborts with a dialog on any error
