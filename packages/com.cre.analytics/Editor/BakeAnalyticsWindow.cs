@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -65,7 +67,7 @@ namespace CRE.Analytics.Editor
 
             if (GUILayout.Button("Bake Analytics"))
             {
-                Debug.Log("[CRE Analytics] Bake not yet implemented");
+                BakeAnalytics();
             }
 
             EditorGUILayout.Space();
@@ -633,5 +635,176 @@ namespace CRE.Analytics.Editor
             
             EditorUtility.SetDirty(schema);
         }
+
+        private void BakeAnalytics()
+        {
+            if (!ValidateSchema(out string validationError))
+            {
+                EditorUtility.DisplayDialog("Bake Failed", validationError, "OK");
+                return;
+            }
+
+            var config = Resources.Load<AnalyticsConfig>("CREAnalyticsConfig");
+            if (config == null)
+            {
+                EditorUtility.DisplayDialog("Bake Failed", "AnalyticsConfig not found at Resources/CREAnalyticsConfig", "OK");
+                return;
+            }
+
+            var secrets = Resources.Load<AnalyticsSecrets>("CREAnalyticsSecrets");
+            if (secrets == null)
+            {
+                EditorUtility.DisplayDialog("Bake Failed", "AnalyticsSecrets not found at Resources/CREAnalyticsSecrets", "OK");
+                return;
+            }
+
+            BumpSchemaVersion();
+
+            AnalyticsCodeGenerator.Generate(schema);
+
+            SyncSchemaToFirebase(config, secrets);
+
+            EditorUtility.SetDirty(schema);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+
+            Debug.Log($"[CRE Analytics] Bake complete — version {schema.schemaVersion}");
+        }
+
+        private bool ValidateSchema(out string errorMessage)
+        {
+            foreach (var field in schema.fields)
+            {
+                if (string.IsNullOrWhiteSpace(field.columnName))
+                {
+                    errorMessage = "One or more fields have an empty columnName";
+                    return false;
+                }
+
+                if (field.columnName.ToLower().StartsWith("session/"))
+                {
+                    errorMessage = $"Field '{field.columnName}' starts with 'Session/' which is reserved";
+                    return false;
+                }
+            }
+
+            var columnNames = schema.fields.Select(f => f.columnName).ToList();
+            var duplicates = columnNames.GroupBy(x => x).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+            if (duplicates.Count > 0)
+            {
+                errorMessage = $"Duplicate column names found: {string.Join(", ", duplicates)}";
+                return false;
+            }
+
+            errorMessage = null;
+            return true;
+        }
+
+        private void BumpSchemaVersion()
+        {
+            var parts = schema.schemaVersion.Split('.');
+            if (parts.Length == 3 && int.TryParse(parts[2], out int patch))
+            {
+                schema.schemaVersion = $"{parts[0]}.{parts[1]}.{patch + 1}";
+            }
+            else
+            {
+                schema.schemaVersion += "-baked";
+            }
+        }
+
+        private void SyncSchemaToFirebase(AnalyticsConfig config, AnalyticsSecrets secrets)
+        {
+            var columns = new List<SchemaColumn>();
+
+            foreach (var field in schema.fields)
+            {
+                columns.Add(new SchemaColumn
+                {
+                    columnName = field.columnName,
+                    dataType = GetDataType(field.type)
+                });
+            }
+
+            columns.Add(new SchemaColumn { columnName = "Session/StartedAt", dataType = "string" });
+            columns.Add(new SchemaColumn { columnName = "Session/EndedAt", dataType = "string" });
+            columns.Add(new SchemaColumn { columnName = "Session/Duration", dataType = "number" });
+            columns.Add(new SchemaColumn { columnName = "Session/Platform", dataType = "string" });
+            columns.Add(new SchemaColumn { columnName = "Session/DeviceModel", dataType = "string" });
+
+            var body = new SchemaBakeRequest
+            {
+                projectId = config.projectId,
+                projectKey = secrets.projectKey,
+                schemaVersion = schema.schemaVersion,
+                columns = columns.ToArray()
+            };
+
+            string json = JsonUtility.ToJson(body);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            string url = $"{config.baseUrl}/schemas/bake";
+
+            try
+            {
+                var client = new HttpClient();
+                var response = client.PostAsync(url, content).Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    string responseBody = response.Content.ReadAsStringAsync().Result;
+                    EditorUtility.DisplayDialog(
+                        "Schema Sync Warning",
+                        $"Firebase schema sync failed with status {(int)response.StatusCode}:\n{responseBody}",
+                        "OK"
+                    );
+                }
+                else
+                {
+                    Debug.Log("[CRE Analytics] Schema synced to Firebase");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                EditorUtility.DisplayDialog(
+                    "Schema Sync Warning",
+                    $"Firebase schema sync failed:\n{ex.Message}",
+                    "OK"
+                );
+            }
+        }
+
+        private string GetDataType(AnalyticsFieldType type)
+        {
+            switch (type)
+            {
+                case AnalyticsFieldType.Int:
+                case AnalyticsFieldType.Float:
+                    return "number";
+                case AnalyticsFieldType.Bool:
+                    return "boolean";
+                case AnalyticsFieldType.String:
+                case AnalyticsFieldType.Timestamp:
+                    return "string";
+                default:
+                    return "string";
+            }
+        }
+    }
+
+    [System.Serializable]
+    internal class SchemaBakeRequest
+    {
+        public string projectId;
+        public string projectKey;
+        public string schemaVersion;
+        public SchemaColumn[] columns;
+    }
+
+    [System.Serializable]
+    internal class SchemaColumn
+    {
+        public string columnName;
+        public string dataType;
     }
 }

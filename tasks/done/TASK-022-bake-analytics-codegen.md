@@ -1,7 +1,7 @@
 ---
 id: TASK-022
 title: Bake Analytics — typed accessor codegen + Firebase schema sync
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:
