@@ -1,7 +1,7 @@
 ---
 id: TASK-027
 title: Add CORS middleware to Firebase Functions Express app
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
