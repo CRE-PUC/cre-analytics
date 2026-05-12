@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: CREAnalyticsConfig
   m_EditorClassIdentifier: 
   baseUrl: http://127.0.0.1:5001/demo-cre-analytics/southamerica-east1/api
-  projectId: 28f26e12-a763-4ff7-a0c1-13ceeece9fad
+  projectId: d6354fde-cc87-48e8-b333-96664e1a7c9f
