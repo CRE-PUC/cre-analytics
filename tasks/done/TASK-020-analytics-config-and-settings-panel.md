@@ -1,7 +1,7 @@
 ---
 id: TASK-020
 title: Analytics config ScriptableObjects + Project Settings panel
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:

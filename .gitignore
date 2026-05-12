@@ -17,6 +17,8 @@ unity-project/.vsconfig
 *.mdb
 *.opendb
 *.VC.db
+unity-project/Assets/Resources/CREAnalyticsSecrets.asset
+unity-project/Assets/Resources/CREAnalyticsSecrets.asset.meta
 
 # Node
 node_modules/
