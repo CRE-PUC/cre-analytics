@@ -1,7 +1,7 @@
 ---
 id: TASK-024
 title: Session lifecycle — StartSession, Set, EndSession, pre-population, schema-gating
-status: pending
+status: done
 model: medium
 model-name: GPT-5.2
 context:

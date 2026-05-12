@@ -11,6 +11,8 @@ namespace CRE.Analytics
         internal AnalyticsSecrets Secrets { get; private set; }
         internal AnalyticsSchema Schema { get; private set; }
 
+        private AnalyticsSession _currentSession;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Bootstrap()
         {
@@ -24,6 +26,7 @@ namespace CRE.Analytics
         void Awake()
         {
             Instance = this;
+            gameObject.AddComponent<SessionSender>();
             LoadConfig();
         }
 
@@ -59,17 +62,38 @@ namespace CRE.Analytics
 
         internal void StartSession()
         {
-            Debug.LogWarning("[CRE Analytics] Session logic not yet implemented");
+            if (_currentSession != null && _currentSession.IsActive)
+            {
+                Debug.LogWarning("[CRE Analytics] StartSession called while a session is already active — replacing.");
+            }
+
+            string projectKey = Secrets?.projectKey ?? "";
+            _currentSession = new AnalyticsSession(Schema, Config.projectId, Schema?.schemaVersion ?? "", projectKey);
         }
 
         internal void SetValue(string columnName, object value)
         {
-            Debug.LogWarning("[CRE Analytics] Session logic not yet implemented");
+            if (_currentSession == null)
+            {
+                Debug.LogWarning("[CRE Analytics] Set called with no active session — ignored.");
+                return;
+            }
+
+            _currentSession.Set(columnName, value);
         }
 
         internal void EndSession()
         {
-            Debug.LogWarning("[CRE Analytics] Session logic not yet implemented");
+            if (_currentSession == null)
+            {
+                Debug.LogWarning("[CRE Analytics] EndSession called with no active session — ignored.");
+                return;
+            }
+
+            _currentSession.Finalize();
+            SessionPayload payload = _currentSession.BuildPayload();
+            GetComponent<SessionSender>().Send(payload, Config.baseUrl);
+            _currentSession = null;
         }
     }
 }
