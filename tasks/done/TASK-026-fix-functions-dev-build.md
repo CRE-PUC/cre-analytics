@@ -1,7 +1,7 @@
 ---
 id: TASK-026
 title: Fix functions dev build pipeline — compile TypeScript before emulator starts
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:

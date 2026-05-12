@@ -2,7 +2,7 @@
   "name": "cre-analytics",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"firebase emulators:start\" \"pnpm --filter backoffice dev\""
+    "dev": "pnpm --filter functions build && concurrently \"pnpm --filter functions build:watch\" \"firebase emulators:start\" \"pnpm --filter backoffice dev\""
   },
   "devDependencies": {
     "concurrently": "^9"
