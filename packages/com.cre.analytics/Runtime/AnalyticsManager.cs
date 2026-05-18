@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CRE.Analytics
@@ -5,6 +6,9 @@ namespace CRE.Analytics
     internal class AnalyticsManager : MonoBehaviour
     {
         internal static AnalyticsManager Instance { get; private set; }
+        
+        internal static event Action<string> OnSessionStarted;
+        internal static event Action OnSessionEnded;
         
         public bool IsInitialized { get; private set; }
         internal AnalyticsConfig Config { get; private set; }
@@ -69,6 +73,7 @@ namespace CRE.Analytics
 
             string projectKey = Secrets?.projectKey ?? "";
             _currentSession = new AnalyticsSession(Schema, Config.projectId, Schema?.schemaVersion ?? "", projectKey);
+            OnSessionStarted?.Invoke(_currentSession.SessionId);
         }
 
         internal void SetValue(string columnName, object value)
@@ -98,6 +103,7 @@ namespace CRE.Analytics
             }
 
             _currentSession.Complete();
+            OnSessionEnded?.Invoke();
             SessionPayload payload = _currentSession.BuildPayload();
             GetComponent<SessionSender>().Send(payload, Config.baseUrl);
             _currentSession = null;

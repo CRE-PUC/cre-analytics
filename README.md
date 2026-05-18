@@ -63,6 +63,18 @@ The Unity SDK requires both values to authenticate and route session data to the
 
 ---
 
+## Unity SDK
+
+Install the SDK in Unity Package Manager using the git URL:
+
+```
+https://github.com/CRE-PUC/cre-analytics.git?path=packages/com.cre.analytics
+```
+
+See `packages/com.cre.analytics/README.md` for full SDK documentation: setup, schema definition, session lifecycle, typed accessors, and session recording.
+
+---
+
 ## Contributing
 
 This repo uses a Claude → Windsurf pipeline for development:
