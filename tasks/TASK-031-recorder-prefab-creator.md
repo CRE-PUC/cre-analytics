@@ -1,7 +1,7 @@
 ---
 id: TASK-031
 title: Create RecorderPrefabCreator editor tool and Runtime/Prefabs folder
-status: pending
+status: done
 model: cheap
 model-name: SWE-1.6
 context:
