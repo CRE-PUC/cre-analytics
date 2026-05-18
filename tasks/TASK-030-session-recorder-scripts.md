@@ -1,7 +1,7 @@
 ---
 id: TASK-030
 title: Implement SessionRecorder core C# scripts
-status: pending
+status: completed
 model: medium
 model-name: GPT-5.2
 context:
@@ -250,14 +250,14 @@ using UnityEngine;
 
 ## Acceptance Criteria
 
-- [ ] `AnalyticsManager.cs` declares `internal static event Action<string> OnSessionStarted` and `internal static event Action OnSessionEnded`
-- [ ] `OnSessionStarted` is invoked with the new `SessionId` at the end of `StartSession()`
-- [ ] `OnSessionEnded` is invoked after `Complete()` and before `BuildPayload()` in `EndSession()`
-- [ ] `RecorderCameraFollower.cs` exists in `Runtime/`, copies `Camera.main` position and rotation every `LateUpdate`, and is marked `internal`
-- [ ] `SessionRecorder.cs` exists in `Runtime/`, is marked `public`
-- [ ] Placing `SessionRecorder` on a scene GameObject and calling `CREAnalytics.StartSession()` causes a `[CRE Recorder Camera]` GameObject to be spawned and a `CRERecordings/{sessionId}/` folder to appear in `Application.persistentDataPath`
-- [ ] Calling `CREAnalytics.EndSession()` stops the coroutine, destroys the recorder camera, and writes `recording_manifest.json`
-- [ ] No compilation errors
+- [x] `AnalyticsManager.cs` declares `internal static event Action<string> OnSessionStarted` and `internal static event Action OnSessionEnded`
+- [x] `OnSessionStarted` is invoked with the new `SessionId` at the end of `StartSession()`
+- [x] `OnSessionEnded` is invoked after `Complete()` and before `BuildPayload()` in `EndSession()`
+- [x] `RecorderCameraFollower.cs` exists in `Runtime/`, copies `Camera.main` position and rotation every `LateUpdate`, and is marked `internal`
+- [x] `SessionRecorder.cs` exists in `Runtime/`, is marked `public`
+- [x] Placing `SessionRecorder` on a scene GameObject and calling `CREAnalytics.StartSession()` causes a `[CRE Recorder Camera]` GameObject to be spawned and a `CRERecordings/{sessionId}/` folder to appear in `Application.persistentDataPath`
+- [x] Calling `CREAnalytics.EndSession()` stops the coroutine, destroys the recorder camera, and writes `recording_manifest.json`
+- [x] No compilation errors
 
 ## Manual Step Required
 
