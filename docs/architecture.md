@@ -103,6 +103,18 @@ Internal-only for now using Firebase Authentication. Auth is not coupled to a si
 ### UPM distribution via `?path=`
 The UPM package lives in a subfolder of the monorepo. Users install it in Unity Package Manager with the Git URL format: `https://github.com/{org}/cre-analytics.git?path=packages/com.cre.analytics`. No separate package repo needed.
 
+### Local session save alongside video recording
+
+`SessionSender` writes `session.json` to `Application.persistentDataPath/CRERecordings/{sessionId}/` before attempting the HTTP POST. This is unconditional — every `EndSession()` call produces a local copy regardless of backend availability. The `CRERecordings/{sessionId}/` folder is the shared root for both the session JSON and the video recording. `session.json` contains only `sessionData` (no `projectKey`), matching the Firestore document shape.
+
+### Session recording — MJPEG AVI, auto-bootstrapped
+
+Recording is opt-in via `AnalyticsConfig.enableRecording`. When enabled, `AnalyticsManager` adds `SessionRecorder` to its own `DontDestroyOnLoad` GameObject at startup — no scene-placed prefab or scene setup required. Recording spans scene transitions seamlessly.
+
+Output: a single `recording.avi` (MJPEG, pure C# writer) at configurable resolution scale (default 0.5×) and frame rate (default 15fps). Configuration lives entirely in `AnalyticsConfig` and is edited via Project Settings > CRE Analytics.
+
+An optional overlay (`showAnalyticsOverlay`, default true) renders each `Set()` call as a fading text entry in the corner of the recording camera's view. The overlay canvas targets the recorder camera's `RenderTexture` and is invisible during gameplay.
+
 ### SDK bootstrap via RuntimeInitializeOnLoadMethod
 The Unity SDK bootstraps without requiring a scene-placed GameObject or init scene. `AnalyticsManager` uses `[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]` to auto-instantiate before any scene loads, making `CREAnalytics.Set()` safe to call from any `Awake()` or `Start()` method in any scene.
 

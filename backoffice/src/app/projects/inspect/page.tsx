@@ -24,9 +24,6 @@ interface SessionMetaData {
   projectId: string;
   schemaVersion: string;
   sessionId: string;
-  platform: string;
-  startedAt: string;
-  endedAt: string;
 }
 
 interface SessionDataEntry {
@@ -44,18 +41,12 @@ interface SessionDocument {
 interface SessionRow {
   __sessionId: string;
   __schemaVersion: string;
-  __platform: string;
-  __startedAt: string;
-  __endedAt: string;
   [columnName: string]: unknown;
 }
 
 const METADATA_LABELS: Record<string, string> = {
   __sessionId: 'Session ID',
   __schemaVersion: 'Schema Version',
-  __platform: 'Platform',
-  __startedAt: 'Started At',
-  __endedAt: 'Ended At',
 };
 
 function inspectLabelParser(segment: string): string {
@@ -129,9 +120,6 @@ function InspectPageContent() {
           const row: SessionRow = {
             __sessionId: doc.id,
             __schemaVersion: metaData.schemaVersion,
-            __platform: metaData.platform,
-            __startedAt: metaData.startedAt,
-            __endedAt: metaData.endedAt,
           };
 
           data.forEach((entry) => {
@@ -147,9 +135,6 @@ function InspectPageContent() {
         const builtColumns: TableColumn<SessionRow>[] = [
           { key: '__sessionId', header: 'Session ID' },
           { key: '__schemaVersion', header: 'Schema Version' },
-          { key: '__platform', header: 'Platform' },
-          { key: '__startedAt', header: 'Started At' },
-          { key: '__endedAt', header: 'Ended At' },
         ];
 
         sortedColumnNames.forEach((columnName) => {
@@ -183,7 +168,7 @@ function InspectPageContent() {
     const { startMs, endMs } = dateRange;
     if (startMs == null) return sessions;
     return sessions.filter((row) => {
-      const ts = new Date(row.__startedAt as string).getTime();
+      const ts = new Date(row['Session/StartedAt'] as string).getTime();
       const dayEnd = endMs != null ? endMs + 86_400_000 - 1 : startMs + 86_400_000 - 1;
       return ts >= startMs && ts <= dayEnd;
     });

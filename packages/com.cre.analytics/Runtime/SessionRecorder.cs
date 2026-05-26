@@ -7,16 +7,14 @@ namespace CRE.Analytics
 {
     public class SessionRecorder : MonoBehaviour
     {
-        [SerializeField] private bool recordOnSessionStart = true;
-        [SerializeField] private int captureFrameRate = 30;
-        [SerializeField] private UnityEngine.UI.Text sessionIdDisplay;
-
         private Camera _recorderCamera;
         private RenderTexture _renderTexture;
         private Coroutine _captureCoroutine;
         private string _sessionId;
-        private int _frameIndex;
-        private string _recordingPath;
+        private int _frameCount;
+        private string _sessionFolder;
+        private string _aviFilePath;
+        private MjpegAviWriter _aviWriter;
 
         void Awake()
         {
@@ -33,7 +31,7 @@ namespace CRE.Analytics
 
         private void HandleSessionStarted(string sessionId)
         {
-            if (recordOnSessionStart) StartRecording(sessionId);
+            StartRecording(sessionId);
         }
 
         private void HandleSessionEnded() => StopRecording();
@@ -41,10 +39,11 @@ namespace CRE.Analytics
         public void StartRecording(string sessionId)
         {
             _sessionId = sessionId;
-            _frameIndex = 0;
+            _frameCount = 0;
 
-            _recordingPath = Path.Combine(Application.persistentDataPath, "CRERecordings", sessionId);
-            Directory.CreateDirectory(_recordingPath);
+            _sessionFolder = Path.Combine(Application.persistentDataPath, "CRERecordings", sessionId);
+            Directory.CreateDirectory(_sessionFolder);
+            _aviFilePath = Path.Combine(_sessionFolder, "recording.avi");
 
             var go = new GameObject("[CRE Recorder Camera]");
             DontDestroyOnLoad(go);
@@ -61,16 +60,18 @@ namespace CRE.Analytics
             }
             _recorderCamera.depth = -10;
 
-            _renderTexture = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);
+            float clampedScale = Mathf.Clamp(AnalyticsManager.Instance.Config.captureResolutionScale, 0.1f, 1.0f);
+            int w = Mathf.Clamp(Mathf.RoundToInt(Screen.width * clampedScale), 1, Screen.width);
+            int h = Mathf.Clamp(Mathf.RoundToInt(Screen.height * clampedScale), 1, Screen.height);
+            _renderTexture = new RenderTexture(w, h, 24, RenderTextureFormat.ARGB32);
             _recorderCamera.targetTexture = _renderTexture;
 
-            if (sessionIdDisplay != null)
-            {
-                sessionIdDisplay.text = $"Session: {sessionId}";
-            }
+            int clampedQuality = Mathf.Clamp(AnalyticsManager.Instance.Config.captureJpegQuality, 1, 100);
+            _aviWriter = new MjpegAviWriter();
+            _aviWriter.Open(_aviFilePath, w, h, AnalyticsManager.Instance.Config.captureFrameRate);
 
             _captureCoroutine = StartCoroutine(CaptureLoop());
-            Debug.Log($"[CRE Recorder] Recording started — {_recordingPath}");
+            Debug.Log($"[CRE Recorder] Recording started — {_aviFilePath}");
         }
 
         public void StopRecording()
@@ -80,7 +81,7 @@ namespace CRE.Analytics
             StopCoroutine(_captureCoroutine);
             _captureCoroutine = null;
 
-            WriteManifest();
+            _aviWriter.Close();
 
             Destroy(_recorderCamera.gameObject);
             _recorderCamera = null;
@@ -89,12 +90,7 @@ namespace CRE.Analytics
             Destroy(_renderTexture);
             _renderTexture = null;
 
-            if (sessionIdDisplay != null)
-            {
-                sessionIdDisplay.text = string.Empty;
-            }
-
-            Debug.Log($"[CRE Recorder] Recording stopped — {_frameIndex} frames saved to {_recordingPath}");
+            Debug.Log($"[CRE Recorder] Recording saved — {_aviFilePath} ({_frameCount} frames)");
         }
 
         private IEnumerator CaptureLoop()
@@ -109,7 +105,7 @@ namespace CRE.Analytics
                 if (Time.time >= nextCapture)
                 {
                     CaptureFrame();
-                    nextCapture += 1f / Mathf.Max(1, captureFrameRate);
+                    nextCapture += 1f / Mathf.Max(1, AnalyticsManager.Instance.Config.captureFrameRate);
                 }
             }
         }
@@ -125,24 +121,12 @@ namespace CRE.Analytics
 
             RenderTexture.active = prevActive;
 
-            byte[] bytes = tex.EncodeToPNG();
+            int clampedQuality = Mathf.Clamp(AnalyticsManager.Instance.Config.captureJpegQuality, 1, 100);
+            byte[] bytes = tex.EncodeToJPG(clampedQuality);
             Destroy(tex);
 
-            string path = Path.Combine(_recordingPath, $"frame_{_frameIndex:D6}.png");
-            File.WriteAllBytes(path, bytes);
-            _frameIndex++;
-        }
-
-        private void WriteManifest()
-        {
-            string json = $@"{{
-  ""sessionId"": ""{_sessionId}"",
-  ""captureFrameRate"": {captureFrameRate},
-  ""frameCount"": {_frameIndex},
-  ""savedAt"": ""{DateTime.UtcNow:O}""
-}}";
-            string manifestPath = Path.Combine(_recordingPath, "recording_manifest.json");
-            File.WriteAllText(manifestPath, json);
+            _aviWriter.WriteFrame(bytes);
+            _frameCount++;
         }
     }
 }

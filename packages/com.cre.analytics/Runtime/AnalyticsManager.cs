@@ -9,6 +9,7 @@ namespace CRE.Analytics
         
         internal static event Action<string> OnSessionStarted;
         internal static event Action OnSessionEnded;
+        internal static event Action<string, object> OnValueSet;
         
         public bool IsInitialized { get; private set; }
         internal AnalyticsConfig Config { get; private set; }
@@ -32,6 +33,15 @@ namespace CRE.Analytics
             Instance = this;
             gameObject.AddComponent<SessionSender>();
             LoadConfig();
+
+            if (Config != null && Config.enableRecording)
+            {
+                gameObject.AddComponent<SessionRecorder>();
+                if (Config.showAnalyticsOverlay)
+                {
+                    gameObject.AddComponent<RecorderOverlay>();
+                }
+            }
         }
 
         void OnDestroy()
@@ -85,6 +95,7 @@ namespace CRE.Analytics
             }
 
             _currentSession.Set(columnName, value);
+            OnValueSet?.Invoke(columnName, value);
         }
 
         internal void EndSession()

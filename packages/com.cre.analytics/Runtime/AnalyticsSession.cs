@@ -98,10 +98,7 @@ namespace CRE.Analytics
             {
                 projectId = _projectId,
                 schemaVersion = _schemaVersion,
-                sessionId = SessionId,
-                platform = Application.platform.ToString(),
-                startedAt = _values["Session/StartedAt"] as string,
-                endedAt = _values["Session/EndedAt"] as string
+                sessionId = SessionId
             };
 
             var dataList = new List<SessionField>();
@@ -143,9 +140,6 @@ namespace CRE.Analytics
         public string projectId;
         public string schemaVersion;
         public string sessionId;
-        public string platform;
-        public string startedAt;
-        public string endedAt;
     }
 
     public class SessionField

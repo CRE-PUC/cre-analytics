@@ -7,9 +7,6 @@ export interface SessionMetaData {
   projectId: string;
   schemaVersion: string;
   sessionId: string;
-  platform: string;
-  startedAt: string;
-  endedAt: string;
 }
 
 export interface SessionData {
@@ -70,9 +67,6 @@ export const SubmitSessionBodyZod = z.object({
       projectId: z.string().min(1),
       schemaVersion: z.string().min(1),
       sessionId: z.string().min(1),
-      platform: z.string().min(1),
-      startedAt: z.string().datetime({ offset: true }),
-      endedAt: z.string().datetime({ offset: true }),
     }),
     data: z.array(z.object({
       columnName: z.string().min(1),

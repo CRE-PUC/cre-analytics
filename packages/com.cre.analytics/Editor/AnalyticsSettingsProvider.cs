@@ -65,6 +65,30 @@ namespace CRE.Analytics
                             EditorUtility.SetDirty(secrets);
                             AssetDatabase.SaveAssets();
                         }
+                        EditorGUILayout.Space();
+                    }
+
+                    if (config != null)
+                    {
+                        EditorGUILayout.LabelField("Recording", EditorStyles.boldLabel);
+                        EditorGUI.BeginChangeCheck();
+                        config.enableRecording = EditorGUILayout.Toggle("Enable Recording", config.enableRecording);
+
+                        if (config.enableRecording)
+                        {
+                            config.captureFrameRate = EditorGUILayout.IntField("Capture Frame Rate", config.captureFrameRate);
+                            config.captureResolutionScale = EditorGUILayout.Slider("Resolution Scale", config.captureResolutionScale, 0.1f, 1.0f);
+                            config.captureJpegQuality = EditorGUILayout.IntSlider("JPEG Quality", config.captureJpegQuality, 1, 100);
+                            config.showAnalyticsOverlay = EditorGUILayout.Toggle("Show Analytics Overlay", config.showAnalyticsOverlay);
+
+                            EditorGUILayout.HelpBox("Recording saves a recording.avi file to Application.persistentDataPath/CRERecordings/{sessionId}/. Resolution scale 0.5 = half screen resolution.", MessageType.Info);
+                        }
+
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            EditorUtility.SetDirty(config);
+                            AssetDatabase.SaveAssets();
+                        }
                     }
                 }
             };
