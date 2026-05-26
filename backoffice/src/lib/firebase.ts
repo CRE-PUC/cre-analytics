@@ -1,6 +1,6 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator, Firestore } from 'firebase/firestore';
-import { getAuth, connectAuthEmulator, Auth } from 'firebase/auth';
+import { initializeApp, getApps } from 'firebase/app';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getAuth, connectAuthEmulator } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'fake-api-key',
@@ -11,27 +11,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || 'fake-app-id',
 };
 
-let app: FirebaseApp;
-let db: Firestore;
-let auth: Auth;
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 
-if (typeof window !== 'undefined') {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  db = getFirestore(app);
-  auth = getAuth(app);
-
-  if (process.env.NEXT_PUBLIC_USE_EMULATOR === 'true') {
-    try {
-      connectFirestoreEmulator(db, 'localhost', 8080);
-    } catch (e) {
-      // Already connected
-    }
-    try {
-      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-    } catch (e) {
-      // Already connected
-    }
-  }
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_USE_EMULATOR === 'true') {
+  try { connectFirestoreEmulator(db, 'localhost', 8080); } catch {}
+  try { connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true }); } catch {}
 }
-
-export { db, auth };
