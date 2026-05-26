@@ -84,11 +84,19 @@ namespace CRE.Analytics.Editor
             {
                 if (child.Field != null)
                 {
-                    string methodName = "Set" + ToPascalCase(child.Name);
-                    string csType = GetCSharpType(child.Field.type);
                     string fullColumnName = child.Field.columnName;
 
-                    sb.AppendLine($"{indent}public static void {methodName}({csType} value) => CREAnalytics.Set(\"{fullColumnName}\", value);");
+                    if (child.Field.type == AnalyticsFieldType.Counter)
+                    {
+                        string methodName = "Increment" + ToPascalCase(child.Name);
+                        sb.AppendLine($"{indent}public static void {methodName}(int amount = 1) => CREAnalytics.Increment(\"{fullColumnName}\", amount);");
+                    }
+                    else
+                    {
+                        string methodName = "Set" + ToPascalCase(child.Name);
+                        string csType = GetCSharpType(child.Field.type);
+                        sb.AppendLine($"{indent}public static void {methodName}({csType} value) => CREAnalytics.Set(\"{fullColumnName}\", value);");
+                    }
                 }
                 else
                 {

@@ -24,6 +24,7 @@ namespace CRE.Analytics
         Int,
         Float,
         Bool,
-        Timestamp
+        Timestamp,
+        Counter
     }
 }

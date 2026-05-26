@@ -74,16 +74,25 @@ On bootstrap, the manager loads three assets from `Resources/`:
 ```csharp
 CREAnalytics.StartSession();
 CREAnalytics.Set("Tutorial/Steps", 3);
+CREAnalytics.Increment("Tutorial/Clicks/Button A");      // +1
+CREAnalytics.Increment("Tutorial/Clicks/Button A", 3);   // +3
 CREAnalytics.EndSession();
 ```
 
+`Increment(columnName, amount = 1)` adds `amount` to the current value of a Counter-typed field. It discards with a warning if the column is unknown, non-numeric, or uses the reserved `Session/` prefix.
+
 ### Generated typed accessors
 
-After baking a schema, the Bake Analytics tool generates `Assets/CREAnalytics/Generated/Analytics.cs` — a static class with one nested class per schema group and one typed setter per field:
+After baking a schema, the Bake Analytics tool generates `Assets/CREAnalytics/Generated/Analytics.cs` — a static class with one nested class per schema group and one typed accessor per field:
+
+- **Number/String/Boolean fields** → `SetX()` method
+- **Counter fields** → `IncrementX(int amount = 1)` method (no `SetX` — prevents accidental overwrites)
 
 ```csharp
 Analytics.Tutorial.SetSteps(3);
 Analytics.MainExperience.SetDuration(45.2f);
+Analytics.Tutorial.Clicks.IncrementButtonA();     // +1
+Analytics.Tutorial.Clicks.IncrementButtonA(3);    // +3
 ```
 
 This is the preferred calling convention — avoids raw column name strings and turns schema drift into compile errors.
@@ -115,7 +124,9 @@ Configure both via `Edit > Project Settings > CRE Analytics`. The panel creates 
 
 Defined in `Runtime/AnalyticsSchema.cs`. Each Unity project creates one instance. Fields:
 - `schemaVersion` — string, bumped by the Bake tool on each bake
-- `fields` — list of `AnalyticsField`, each with `columnName` (supports `/` hierarchy), `type` (enum), `description` (optional)
+- `fields` — list of `AnalyticsField`, each with `columnName` (supports `/` hierarchy), `type` (enum: `String | Number | Boolean | Counter`), `description` (optional)
+
+`Counter` fields pre-populate to `0` at session start (same as Number) and are mutated exclusively via `CREAnalytics.Increment()`. They are submitted as plain numbers in the session payload — no backend or Firestore changes needed.
 
 Developers place their schema asset at `Assets/Resources/CREAnalyticsSchema.asset` so the runtime can load it.
 
