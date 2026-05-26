@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C e:/git/cre-analytics status --short packages/com.cre.analytics/)"
+    ]
+  }
+}
