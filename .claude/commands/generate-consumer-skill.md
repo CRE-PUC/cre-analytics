@@ -1,0 +1,1 @@
+@pipeline/skills/generate-consumer-skill.md

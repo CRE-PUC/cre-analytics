@@ -1,0 +1,26 @@
+{
+    "sessionData": {
+        "metaData": {
+            "projectVersion": "1.0.0",
+            "sessionId": "1234567890"
+        },
+        "data": [
+            {
+                "columnName": "Tutorial Diegetico/Começou em",
+                "value": "2025-10-15T10:00:00Z"
+            },
+            {
+                "columnName" : "Tutorial Diegetico/Cliques/Botão A",
+                "value": 40
+            },
+            {
+                "columnName": "Experiência Principal/Começou em",
+                "value": "2025-10-15T10:05:00Z"
+            },
+            {
+                "columnName": "Experiência Principal/Cliques/Botão A",
+                "value": 30
+            }
+        ]
+    }
+}

@@ -1,76 +1,86 @@
-# Claude → Windsurf Pipeline
+# CRE Analytics
 
-A reference repo that enforces a structured AI collaboration pipeline between **Claude** (architect) and **Windsurf** (executor). Clone this as a base for any new project to get the pipeline wired up from day one.
-
----
-
-## How it works
-
-```
-Claude session
-  ├── 1. Sync docs from completed tasks (reads sync-queue.md)
-  ├── 2. Orient using architecture.md + context files
-  └── 3. Create tasks in tasks/
-
-Windsurf session
-  ├── 1. Pick up a pending task
-  ├── 2. Load only the context listed in the task
-  ├── 3. Implement to acceptance criteria
-  └── 4. Mark done → write to sync-queue.md → move to tasks/done/
-
-Repeat
-```
-
-No expensive post-execution reviews. Doc freshness is maintained through a lightweight sync queue that Claude processes at the start of each session.
+A session-based analytics platform for Unity applications. Unity projects instrument their sessions using the SDK, aggregate all data locally, then send one document per session to a Firebase backend. A Next.js backoffice lets the team read, filter, and export session data.
 
 ---
 
-## Roles
+## Overview
 
-| | Claude | Windsurf |
-|---|---|---|
-| **Role** | Architect & context maintainer | Executor |
-| **Creates tasks** | ✅ | ❌ |
-| **Executes tasks** | ❌ | ✅ |
-| **Updates architecture/context docs** | ✅ | ❌ (flags via sync-queue) |
-| **Writes to sync-queue** | ❌ (clears it) | ✅ (appends to it) |
+1. Unity SDK (`packages/com.cre.analytics/`) collects session data and aggregates it locally
+2. At session end, the SDK sends a single document to Firebase Functions
+3. Firestore stores the session document under `projects/{projectId}/sessions/{sessionId}`
+4. Next.js backoffice (`backoffice/`) provides a dashboard to view, filter, and export sessions
 
 ---
 
-## Model Tiers
+## Tech Stack
 
-Claude selects the cheapest model that can handle the task. Tasks are broken down to avoid escalating unnecessarily.
-
-| Tier | Model | Used for |
-|------|-------|----------|
-| cheap | SWE-1.6 | Mechanical, well-defined work — boilerplate, simple fixes, CRUD |
-| medium | GPT-5.2 | Feature implementation, refactoring, moderate ambiguity |
-| strong | claude-sonnet-4-5 / claude-opus-4-6 | Complex architecture, security-sensitive, deep reasoning |
+| Layer | Technology |
+|-------|-----------|
+| Unity SDK | UPM package (`packages/com.cre.analytics`) |
+| Backend | Firebase Functions (TypeScript) |
+| Database | Firestore |
+| Backoffice | Next.js + Firebase Hosting |
+| UI library | @cre/web-ui (internal, `packages/cre-web-ui`) |
+| Package manager | pnpm workspaces |
 
 ---
 
-## Repo Structure
+## Local Development
 
-```
-CLAUDE.md                  # Claude's role, session protocol, task creation rules
-AGENTS.md                  # Windsurf's execution protocol
-docs/
-  architecture.md          # System architecture (keep current)
-  sync-queue.md            # Pending doc updates for Claude to process
-  context/                 # Domain-specific context files (Claude-managed)
-tasks/
-  _template.md             # Task template
-  TASK-XXX.md              # Pending tasks
-  done/                    # Completed tasks
+### Prerequisites
+- Node.js 20
+- pnpm
+- Firebase CLI
+
+### Setup
+```bash
+pnpm install
+pnpm dev
 ```
 
+This starts:
+- Firebase Emulators UI at http://localhost:4000
+- Next.js backoffice at http://localhost:3000
+- Firebase Functions emulator at http://localhost:5001
+
+Copy `backoffice/.env.local.example` to `backoffice/.env.local` and set `NEXT_PUBLIC_USE_EMULATOR=true` to connect to local emulators.
+
+### API Testing
+
+A Postman collection for the Functions API is at `postman/CRE Analytics.postman_collection.json`. Import it in Postman to test `POST /schemas/bake` and `POST /sessions` against the emulator or production.
+
 ---
 
-## Using this as a base
+## Creating a Project
 
-1. Clone or copy this repo into your new project
-2. Have Claude read the repo and fill out `docs/architecture.md`
-3. Let Claude create initial context files for any complex domains
-4. Start creating tasks — Claude architects, Windsurf executes
+1. Open the backoffice at http://localhost:3000
+2. Create a new project
+3. Copy the Project ID and Project Key
+4. Configure these values in the Unity SDK
 
-Read [`CLAUDE.md`](CLAUDE.md) and [`AGENTS.md`](AGENTS.md) for the full protocol.
+The Unity SDK requires both values to authenticate and route session data to the correct project in Firestore.
+
+---
+
+## Unity SDK
+
+Install the SDK in Unity Package Manager using the git URL:
+
+```
+https://github.com/CRE-PUC/cre-analytics.git?path=packages/com.cre.analytics
+```
+
+See `packages/com.cre.analytics/README.md` for full SDK documentation: setup, schema definition, session lifecycle, typed accessors, and session recording.
+
+---
+
+## Contributing
+
+This repo uses a Claude → Windsurf pipeline for development:
+- Tasks live in `tasks/`
+- Claude creates tasks based on architectural decisions
+- Windsurf executes tasks to acceptance criteria
+- Completed tasks move to `tasks/done/`
+
+See `docs/architecture.md` for detailed system documentation.

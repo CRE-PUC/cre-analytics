@@ -1,0 +1,1 @@
+@pipeline/skills/create-migration.md

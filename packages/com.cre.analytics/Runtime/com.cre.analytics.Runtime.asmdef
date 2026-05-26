@@ -1,0 +1,10 @@
+{
+  "name": "CRE.Analytics.Runtime",
+  "rootNamespace": "CRE.Analytics",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "autoReferenced": true
+}

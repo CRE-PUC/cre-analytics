@@ -1,0 +1,4 @@
+packages:
+  - 'functions'
+  - 'backoffice'
+  - 'packages/cre-web-ui'

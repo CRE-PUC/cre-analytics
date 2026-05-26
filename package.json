@@ -1,0 +1,13 @@
+{
+  "name": "cre-analytics",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter functions build && concurrently \"pnpm --filter functions build:watch\" \"firebase emulators:start\" \"pnpm --filter backoffice dev\"",
+    "build": "pnpm --filter @cre/web-ui build && pnpm --filter backoffice build && pnpm --prefix functions build",
+    "release": "pnpm build && firebase deploy",
+    "release:hosting": "pnpm --filter @cre/web-ui build && pnpm --filter backoffice build && firebase deploy --only hosting"
+  },
+  "devDependencies": {
+    "concurrently": "^9"
+  }
+}
