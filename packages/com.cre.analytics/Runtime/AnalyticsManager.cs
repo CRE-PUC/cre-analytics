@@ -98,6 +98,22 @@ namespace CRE.Analytics
             OnValueSet?.Invoke(columnName, value);
         }
 
+        internal void Increment(string columnName, int amount = 1)
+        {
+            if (_currentSession == null)
+            {
+                Debug.LogWarning("[CRE Analytics] Increment called with no active session — ignored.");
+                return;
+            }
+
+            if (_currentSession.Increment(columnName, amount))
+            {
+                var newValue = _currentSession.GetValue(columnName);
+                if (newValue != null)
+                    OnValueSet?.Invoke(columnName, newValue);
+            }
+        }
+
         internal void EndSession()
         {
             if (_currentSession == null)

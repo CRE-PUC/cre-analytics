@@ -85,6 +85,36 @@ namespace CRE.Analytics
             _values[columnName] = value;
         }
 
+        public bool Increment(string columnName, int amount = 1)
+        {
+            if (!_values.ContainsKey(columnName))
+            {
+                Debug.LogWarning($"[CRE Analytics] Increment called on unknown column '{columnName}'. Call discarded.");
+                return false;
+            }
+
+            if (columnName.StartsWith("Session/", StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.LogWarning("[CRE Analytics] Session/ fields are managed by the SDK and cannot be set manually.");
+                return false;
+            }
+
+            if (_values[columnName] is int currentInt)
+                _values[columnName] = currentInt + amount;
+            else if (_values[columnName] is float currentFloat)
+                _values[columnName] = (int)currentFloat + amount;
+            else
+            {
+                Debug.LogWarning($"[CRE Analytics] Increment called on non-numeric column '{columnName}'. Call discarded.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public object GetValue(string columnName)
+            => _values.TryGetValue(columnName, out var v) ? v : null;
+
         public void Complete()
         {
             _values["Session/EndedAt"] = DateTime.UtcNow.ToString("o");

@@ -780,6 +780,7 @@ namespace CRE.Analytics.Editor
             {
                 case AnalyticsFieldType.Int:
                 case AnalyticsFieldType.Float:
+                case AnalyticsFieldType.Counter:
                     return "number";
                 case AnalyticsFieldType.Bool:
                     return "boolean";
