@@ -1,6 +1,6 @@
 {
   "name": "com.cre.analytics",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "CRE Analytics",
   "description": "Session-based analytics SDK for Unity projects",
   "unity": "6000.0",
