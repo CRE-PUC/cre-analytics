@@ -56,6 +56,9 @@ namespace CRE.Analytics
                     case AnalyticsFieldType.Timestamp:
                         _values[field.columnName] = null;
                         break;
+                    case AnalyticsFieldType.Counter:
+                        _values[field.columnName] = 0;
+                        break;
                 }
             }
 
